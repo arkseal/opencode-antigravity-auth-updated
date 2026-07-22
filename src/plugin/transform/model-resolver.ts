@@ -73,8 +73,9 @@ const GEMINI_35_FLASH_REGEX = /^gemini-3\.5-flash(?:-(minimal|low|medium|high))?
 const GEMINI_35_FLASH_LOW_MODEL = "gemini-3.5-flash-low";
 const GEMINI_35_FLASH_HIGH_MODEL = "gemini-3-flash-agent";
 const GEMINI_36_FLASH_REGEX = /^gemini-3\.6-flash(?:-(minimal|low|medium|high))?$/i;
-const GEMINI_36_FLASH_LOW_MODEL = "gemini-3.5-flash-low";
-const GEMINI_36_FLASH_HIGH_MODEL = "gemini-3-flash-agent";
+const GEMINI_36_FLASH_LOW_MODEL = "gemini-3.6-flash-low";
+const GEMINI_36_FLASH_MEDIUM_MODEL = "gemini-3.6-flash-medium";
+const GEMINI_36_FLASH_HIGH_MODEL = "gemini-3.6-flash-high";
 /**
  * Dotted-minor Gemini generations (gemini-3.1, gemini-3.5, ...) use BARE model
  * names on the Gemini CLI backend, unlike the legacy 3.0 line (gemini-3-pro) which
@@ -198,7 +199,9 @@ export function resolveAntigravityGemini36FlashBackendModel(
   }
 
   const level = (thinkingLevel ?? match[1] ?? "low").toLowerCase();
-  return level === "high" ? GEMINI_36_FLASH_HIGH_MODEL : GEMINI_36_FLASH_LOW_MODEL;
+  if (level === "high") return GEMINI_36_FLASH_HIGH_MODEL;
+  if (level === "medium") return GEMINI_36_FLASH_MEDIUM_MODEL;
+  return GEMINI_36_FLASH_LOW_MODEL;
 }
 
 /**
