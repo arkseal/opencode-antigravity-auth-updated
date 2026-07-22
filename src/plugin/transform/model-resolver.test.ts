@@ -212,6 +212,47 @@ describe("resolveModelWithTier", () => {
     });
   });
 
+  describe("Gemini 3.6 Flash backend resolution", () => {
+    it("antigravity-gemini-3.6-flash maps to the Antigravity low backend id by default", () => {
+      const result = resolveModelWithTier("antigravity-gemini-3.6-flash");
+      expect(result.actualModel).toBe("gemini-3.5-flash-low");
+      expect(result.thinkingLevel).toBe("low");
+      expect(result.quotaPreference).toBe("antigravity");
+      expect(result.explicitQuota).toBe(true);
+    });
+
+    it("antigravity-gemini-3.6-flash-minimal maps to low backend id with minimal thinkingLevel", () => {
+      const result = resolveModelWithTier("antigravity-gemini-3.6-flash-minimal");
+      expect(result.actualModel).toBe("gemini-3.5-flash-low");
+      expect(result.thinkingLevel).toBe("minimal");
+    });
+
+    it("antigravity-gemini-3.6-flash-low maps to low backend id", () => {
+      const result = resolveModelWithTier("antigravity-gemini-3.6-flash-low");
+      expect(result.actualModel).toBe("gemini-3.5-flash-low");
+      expect(result.thinkingLevel).toBe("low");
+    });
+
+    it("antigravity-gemini-3.6-flash-medium uses the low backend id with medium thinkingLevel", () => {
+      const result = resolveModelWithTier("antigravity-gemini-3.6-flash-medium");
+      expect(result.actualModel).toBe("gemini-3.5-flash-low");
+      expect(result.thinkingLevel).toBe("medium");
+    });
+
+    it("antigravity-gemini-3.6-flash-high maps to the Antigravity high backend id", () => {
+      const result = resolveModelWithTier("antigravity-gemini-3.6-flash-high");
+      expect(result.actualModel).toBe("gemini-3-flash-agent");
+      expect(result.thinkingLevel).toBe("high");
+    });
+
+    it("gemini-3.6-flash (bare) gets default thinkingLevel 'low' with antigravity quota", () => {
+      const result = resolveModelWithTier("gemini-3.6-flash");
+      expect(result.actualModel).toBe("gemini-3.6-flash");
+      expect(result.thinkingLevel).toBe("low");
+      expect(result.quotaPreference).toBe("antigravity");
+    });
+  });
+
   describe("Claude thinking models default budget", () => {
     it("antigravity-claude-opus-4-6-thinking gets default max budget (32768)", () => {
       const result = resolveModelWithTier("antigravity-claude-opus-4-6-thinking");
@@ -401,6 +442,19 @@ describe("Issue #103: resolveModelForHeaderStyle", () => {
       expect(result.thinkingLevel).toBe("high");
       expect(result.quotaPreference).toBe("antigravity");
     });
+
+    it("transforms gemini-3.6-flash to the Antigravity low backend id", () => {
+      const result = resolveModelForHeaderStyle("gemini-3.6-flash", "antigravity");
+      expect(result.actualModel).toBe("gemini-3.5-flash-low");
+      expect(result.quotaPreference).toBe("antigravity");
+    });
+
+    it("transforms gemini-3.6-flash-high to the Antigravity high backend id", () => {
+      const result = resolveModelForHeaderStyle("gemini-3.6-flash-high", "antigravity");
+      expect(result.actualModel).toBe("gemini-3-flash-agent");
+      expect(result.thinkingLevel).toBe("high");
+      expect(result.quotaPreference).toBe("antigravity");
+    });
   });
 
   describe("quota fallback from antigravity to gemini-cli", () => {
@@ -449,6 +503,12 @@ describe("Issue #103: resolveModelForHeaderStyle", () => {
     it("keeps gemini-3.5-flash as gemini-3.5-flash (bare) for gemini-cli", () => {
       const result = resolveModelForHeaderStyle("gemini-3.5-flash", "gemini-cli");
       expect(result.actualModel).toBe("gemini-3.5-flash");
+      expect(result.quotaPreference).toBe("gemini-cli");
+    });
+
+    it("keeps gemini-3.6-flash as gemini-3.6-flash (bare) for gemini-cli", () => {
+      const result = resolveModelForHeaderStyle("gemini-3.6-flash", "gemini-cli");
+      expect(result.actualModel).toBe("gemini-3.6-flash");
       expect(result.quotaPreference).toBe("gemini-cli");
     });
   });
