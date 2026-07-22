@@ -61,6 +61,7 @@ import { isGemini3Model, isImageGenerationModel, buildImageGenerationConfig, app
 import {
   resolveModelForHeaderStyle,
   resolveAntigravityGemini35FlashBackendModel,
+  resolveAntigravityGemini36FlashBackendModel,
   isClaudeModel,
   isClaudeThinkingModel,
   CLAUDE_THINKING_MAX_OUTPUT_TOKENS,
@@ -1064,13 +1065,22 @@ export function prepareAntigravityRequest(
         }
 
         if (headerStyle === "antigravity") {
-          const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+          const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(
             rawModel,
             tierThinkingLevel,
           );
-          if (gemini35FlashBackendModel) {
-            effectiveModel = gemini35FlashBackendModel;
-            wrappedBody.model = gemini35FlashBackendModel;
+          if (gemini36FlashBackendModel) {
+            effectiveModel = gemini36FlashBackendModel;
+            wrappedBody.model = gemini36FlashBackendModel;
+          } else {
+            const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+              rawModel,
+              tierThinkingLevel,
+            );
+            if (gemini35FlashBackendModel) {
+              effectiveModel = gemini35FlashBackendModel;
+              wrappedBody.model = gemini35FlashBackendModel;
+            }
           }
         }
 
@@ -1161,12 +1171,20 @@ export function prepareAntigravityRequest(
         }
 
         if (headerStyle === "antigravity") {
-          const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+          const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(
             rawModel,
             tierThinkingLevel,
           );
-          if (gemini35FlashBackendModel) {
-            effectiveModel = gemini35FlashBackendModel;
+          if (gemini36FlashBackendModel) {
+            effectiveModel = gemini36FlashBackendModel;
+          } else {
+            const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+              rawModel,
+              tierThinkingLevel,
+            );
+            if (gemini35FlashBackendModel) {
+              effectiveModel = gemini35FlashBackendModel;
+            }
           }
         }
 

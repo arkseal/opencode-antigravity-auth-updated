@@ -1274,6 +1274,144 @@ it("removes API key headers", () => {
         });
       });
 
+      it("transforms gemini-3.6-flash to the Antigravity low backend id for antigravity headerStyle", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          { method: "POST", body: JSON.stringify({ contents: [] }) },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-low");
+      });
+
+      it("injects default thinkingLevel for bare gemini-3.6-flash on antigravity", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          { method: "POST", body: JSON.stringify({ contents: [] }) },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-low");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "low",
+          includeThoughts: true,
+        });
+      });
+
+      it("injects default thinkingLevel for wrapped gemini-3.6-flash requests", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              project: "existing-project",
+              request: { contents: [] },
+            }),
+          },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-low");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "low",
+          includeThoughts: true,
+        });
+      });
+
+      it("preserves explicit thinkingLevel for gemini-3.6-flash", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              contents: [],
+              generationConfig: {
+                thinkingConfig: {
+                  thinkingLevel: "medium",
+                  includeThoughts: false,
+                },
+              },
+            }),
+          },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-medium");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.model).toBe("gemini-3.6-flash-medium");
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "medium",
+          includeThoughts: false,
+        });
+      });
+
+      it("maps explicit high thinkingLevel for gemini-3.6-flash to the Antigravity high backend id", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              contents: [],
+              generationConfig: {
+                thinkingConfig: {
+                  thinkingLevel: "high",
+                  includeThoughts: true,
+                },
+              },
+            }),
+          },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-high");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.model).toBe("gemini-3.6-flash-high");
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "high",
+          includeThoughts: true,
+        });
+      });
+
+      it("maps providerOptions high variant for gemini-3.6-flash to the Antigravity high backend id", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              contents: [],
+              providerOptions: {
+                google: {
+                  thinkingLevel: "high",
+                },
+              },
+            }),
+          },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.6-flash-high");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.model).toBe("gemini-3.6-flash-high");
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "high",
+          includeThoughts: true,
+        });
+      });
+
       it("transforms gemini-3-flash to gemini-3-flash-preview for gemini-cli headerStyle", () => {
         const result = prepareAntigravityRequest(
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent",
