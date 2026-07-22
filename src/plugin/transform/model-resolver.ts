@@ -202,6 +202,7 @@ export function resolveAntigravityGemini36FlashBackendModel(
 }
 
 /**
+ * Resolves a model name with optional tier suffix and quota prefix to its actual API model name
  * and corresponding thinking configuration.
  *
  * Quota routing:
