@@ -237,6 +237,7 @@ describe("api-key agy sdk support", () => {
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3-pro-high:generateContent")).toBe(true);
     // antigravity-gemini-3.5-flash strips to the bare public-API native gemini-3.5-flash.
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.5-flash:generateContent")).toBe(true);
+    expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.7-flash:generateContent")).toBe(true);
 
     // Claude (and unmapped antigravity- prefixed ids) have no public-API equivalent.
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/claude-opus-4-6-thinking:generateContent")).toBe(false);
@@ -269,10 +270,12 @@ describe("api-key agy sdk support", () => {
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.1-pro:generateContent")).toBe(false);
     // antigravity-gemini-3.5-flash falls through (strips to public-API native gemini-3.5-flash).
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.5-flash:generateContent")).toBe(false);
+    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.7-flash:generateContent")).toBe(false);
 
     // Public-API Gemini ids → false (they CAN be served by the public API natively).
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent")).toBe(false);
+    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent")).toBe(false);
 
     // Wrong host or malformed → false

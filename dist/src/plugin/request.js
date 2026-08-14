@@ -11,7 +11,7 @@ import { CLAUDE_TOOL_SYSTEM_INSTRUCTION, CLAUDE_DESCRIPTION_PROMPT, ANTIGRAVITY_
 import { analyzeConversationState, closeToolLoopForThinking, needsThinkingRecovery, } from "./thinking-recovery.js";
 import { sanitizeCrossModelPayloadInPlace } from "./transform/cross-model-sanitizer.js";
 import { isGemini3Model, isImageGenerationModel, buildImageGenerationConfig, applyGeminiTransforms } from "./transform/index.js";
-import { resolveModelForHeaderStyle, resolveAntigravityGemini35FlashBackendModel, resolveAntigravityGemini36FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
+import { resolveModelForHeaderStyle, resolveAntigravityGemini35FlashBackendModel, resolveAntigravityGemini36FlashBackendModel, resolveAntigravityGemini37FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
 import { detectErrorType } from "./recovery.js";
 import { getSessionFingerprint, buildFingerprintHeaders } from "./fingerprint.js";
 const log = createLogger("request");
@@ -742,16 +742,23 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                     }
                 }
                 if (headerStyle === "antigravity") {
-                    const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(rawModel, tierThinkingLevel);
-                    if (gemini36FlashBackendModel) {
-                        effectiveModel = gemini36FlashBackendModel;
-                        wrappedBody.model = gemini36FlashBackendModel;
+                    const gemini37FlashBackendModel = resolveAntigravityGemini37FlashBackendModel(rawModel, tierThinkingLevel);
+                    if (gemini37FlashBackendModel) {
+                        effectiveModel = gemini37FlashBackendModel;
+                        wrappedBody.model = gemini37FlashBackendModel;
                     }
                     else {
-                        const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
-                        if (gemini35FlashBackendModel) {
-                            effectiveModel = gemini35FlashBackendModel;
-                            wrappedBody.model = gemini35FlashBackendModel;
+                        const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(rawModel, tierThinkingLevel);
+                        if (gemini36FlashBackendModel) {
+                            effectiveModel = gemini36FlashBackendModel;
+                            wrappedBody.model = gemini36FlashBackendModel;
+                        }
+                        else {
+                            const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
+                            if (gemini35FlashBackendModel) {
+                                effectiveModel = gemini35FlashBackendModel;
+                                wrappedBody.model = gemini35FlashBackendModel;
+                            }
                         }
                     }
                 }
@@ -824,14 +831,20 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                     }
                 }
                 if (headerStyle === "antigravity") {
-                    const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(rawModel, tierThinkingLevel);
-                    if (gemini36FlashBackendModel) {
-                        effectiveModel = gemini36FlashBackendModel;
+                    const gemini37FlashBackendModel = resolveAntigravityGemini37FlashBackendModel(rawModel, tierThinkingLevel);
+                    if (gemini37FlashBackendModel) {
+                        effectiveModel = gemini37FlashBackendModel;
                     }
                     else {
-                        const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
-                        if (gemini35FlashBackendModel) {
-                            effectiveModel = gemini35FlashBackendModel;
+                        const gemini36FlashBackendModel = resolveAntigravityGemini36FlashBackendModel(rawModel, tierThinkingLevel);
+                        if (gemini36FlashBackendModel) {
+                            effectiveModel = gemini36FlashBackendModel;
+                        }
+                        else {
+                            const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
+                            if (gemini35FlashBackendModel) {
+                                effectiveModel = gemini35FlashBackendModel;
+                            }
                         }
                     }
                 }

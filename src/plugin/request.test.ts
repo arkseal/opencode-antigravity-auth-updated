@@ -1412,6 +1412,35 @@ it("removes API key headers", () => {
         });
       });
 
+      it("transforms gemini-3.7-flash to the Antigravity tiered backend id for antigravity headerStyle", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent",
+          { method: "POST", body: JSON.stringify({ contents: [] }) },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.7-flash-tiered");
+      });
+
+      it("injects default thinkingLevel for bare gemini-3.7-flash on antigravity", () => {
+        const result = prepareAntigravityRequest(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent",
+          { method: "POST", body: JSON.stringify({ contents: [] }) },
+          mockAccessToken,
+          mockProjectId,
+          undefined,
+          "antigravity"
+        );
+        expect(result.effectiveModel).toBe("gemini-3.7-flash-tiered");
+        const wrapped = JSON.parse(result.init.body as string);
+        expect(wrapped.request.generationConfig.thinkingConfig).toMatchObject({
+          thinkingLevel: "low",
+          includeThoughts: true,
+        });
+      });
+
       it("transforms gemini-3-flash to gemini-3-flash-preview for gemini-cli headerStyle", () => {
         const result = prepareAntigravityRequest(
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent",

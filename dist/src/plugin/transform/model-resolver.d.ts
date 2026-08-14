@@ -60,6 +60,11 @@ export declare function resolveAntigravityGemini35FlashBackendModel(model: strin
  */
 export declare function resolveAntigravityGemini36FlashBackendModel(model: string, thinkingLevel?: string): string | undefined;
 /**
+ * Resolves antigravity-gemini-3.7-flash to Cloud Code backend model ids.
+ * Maps to gemini-3.7-flash-tiered with low/medium/high thinking levels supported by Google's backend.
+ */
+export declare function resolveAntigravityGemini37FlashBackendModel(model: string, _thinkingLevel?: string): string | undefined;
+/**
  * Resolves a model name with optional tier suffix and quota prefix to its actual API model name
  * and corresponding thinking configuration.
  *
