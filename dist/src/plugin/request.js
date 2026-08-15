@@ -11,7 +11,7 @@ import { CLAUDE_TOOL_SYSTEM_INSTRUCTION, CLAUDE_DESCRIPTION_PROMPT, ANTIGRAVITY_
 import { analyzeConversationState, closeToolLoopForThinking, needsThinkingRecovery, } from "./thinking-recovery.js";
 import { sanitizeCrossModelPayloadInPlace } from "./transform/cross-model-sanitizer.js";
 import { isGemini3Model, isImageGenerationModel, buildImageGenerationConfig, applyGeminiTransforms } from "./transform/index.js";
-import { resolveModelForHeaderStyle, resolveAntigravityGemini35FlashBackendModel, resolveAntigravityGemini36FlashBackendModel, resolveAntigravityGemini37FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
+import { resolveModelForHeaderStyle, resolveAntigravityGemini31ProBackendModel, resolveAntigravityGemini35FlashBackendModel, resolveAntigravityGemini36FlashBackendModel, resolveAntigravityGemini37FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
 import { detectErrorType } from "./recovery.js";
 import { getSessionFingerprint, buildFingerprintHeaders } from "./fingerprint.js";
 const log = createLogger("request");
@@ -759,13 +759,20 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                                 effectiveModel = gemini35FlashBackendModel;
                                 wrappedBody.model = gemini35FlashBackendModel;
                             }
+                            else {
+                                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
+                                if (gemini31ProBackendModel) {
+                                    effectiveModel = gemini31ProBackendModel;
+                                    wrappedBody.model = gemini31ProBackendModel;
+                                }
+                            }
                         }
                     }
                 }
                 const conversationKey = resolveConversationKeyFromRequests(requestObjects);
                 // Strip tier suffix from model for cache key to prevent cache misses on tier change
                 // e.g., "claude-opus-4-6-thinking-high" -> "claude-opus-4-6-thinking"
-                const modelForCacheKey = effectiveModel.replace(/-(minimal|low|medium|high)$/i, "");
+                const modelForCacheKey = effectiveModel.replace(/-(minimal|low|medium|high|max)$/i, "");
                 signatureSessionKey = buildSignatureSessionKey(PLUGIN_SESSION_ID, modelForCacheKey, conversationKey, signatureCacheProjectKey(modelForCacheKey, resolveProjectKey(parsedBody.project)));
                 if (requestObjects.length > 0) {
                     sessionId = signatureSessionKey;
@@ -844,6 +851,12 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                             const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
                             if (gemini35FlashBackendModel) {
                                 effectiveModel = gemini35FlashBackendModel;
+                            }
+                            else {
+                                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
+                                if (gemini31ProBackendModel) {
+                                    effectiveModel = gemini31ProBackendModel;
+                                }
                             }
                         }
                     }

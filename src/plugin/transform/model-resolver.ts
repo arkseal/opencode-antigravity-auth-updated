@@ -16,7 +16,7 @@ export interface ModelResolverOptions {
  * Claude and Gemini 2.5 Pro use numeric budgets.
  */
 export const THINKING_TIER_BUDGETS = {
-  claude: { low: 8192, medium: 16384, high: 32768 },
+  claude: { low: 8192, medium: 16384, high: 32768, max: 32768 },
   "gemini-2.5-pro": { low: 8192, medium: 16384, high: 32768 },
   "gemini-2.5-flash": { low: 6144, medium: 12288, high: 24576 },
   default: { low: 4096, medium: 8192, high: 16384 },
@@ -57,18 +57,22 @@ export const MODEL_ALIASES: Record<string, string> = {
   "gemini-claude-opus-4-6-thinking-low": "claude-opus-4-6-thinking",
   "gemini-claude-opus-4-6-thinking-medium": "claude-opus-4-6-thinking",
   "gemini-claude-opus-4-6-thinking-high": "claude-opus-4-6-thinking",
+  "gemini-claude-opus-4-6-thinking-max": "claude-opus-4-6-thinking",
   "gemini-claude-sonnet-4-6": "claude-sonnet-4-6",
 
-  // Image generation models - only gemini-3-pro-image is available via Antigravity API
-  // Note: gemini-2.5-flash-image (Nano Banana) is NOT supported by Antigravity - only Google AI API
-  // Reference: Antigravity-Manager/src-tauri/src/proxy/common/model_mapping.rs
+  // Image generation models - only gemini-3.1-flash-image is available via Antigravity API
+  "gemini-3-pro-image": "gemini-3.1-flash-image",
+  "gemini-3.1-flash-image": "gemini-3.1-flash-image",
 };
 
-const TIER_REGEX = /-(minimal|low|medium|high)$/;
+const TIER_REGEX = /-(minimal|low|medium|high|max)$/;
 const QUOTA_PREFIX_REGEX = /^antigravity-/i;
 const GEMINI_3_PRO_REGEX = /^gemini-3(?:\.\d+)?-pro/i;
 const GEMINI_3_FLASH_REGEX = /^gemini-3(?:\.\d+)?-flash/i;
 const GEMINI_3_BASE_PRO_REGEX = /^gemini-3-pro/i;
+const GEMINI_31_PRO_REGEX = /^gemini-3\.1-pro(?:-(low|high))?$/i;
+const GEMINI_31_PRO_LOW_MODEL = "gemini-3.1-pro-low";
+const GEMINI_31_PRO_HIGH_MODEL = "gemini-pro-agent";
 const GEMINI_35_FLASH_REGEX = /^gemini-3\.5-flash(?:-(minimal|low|medium|high))?$/i;
 const GEMINI_35_FLASH_LOW_MODEL = "gemini-3.5-flash-low";
 const GEMINI_35_FLASH_HIGH_MODEL = "gemini-3-flash-agent";
@@ -166,6 +170,24 @@ function isGemini3FlashModel(model: string): boolean {
  */
 function isGemini3BaseProModel(model: string): boolean {
   return GEMINI_3_BASE_PRO_REGEX.test(model);
+}
+
+/**
+ * Resolves antigravity-gemini-3.1-pro to Cloud Code backend model ids.
+ * Maps low/default tier to gemini-3.1-pro-low and high tier to gemini-pro-agent.
+ */
+export function resolveAntigravityGemini31ProBackendModel(
+  model: string,
+  thinkingLevel?: string,
+): string | undefined {
+  const modelWithoutQuota = model.replace(QUOTA_PREFIX_REGEX, "");
+  const match = modelWithoutQuota.match(GEMINI_31_PRO_REGEX);
+  if (!match) {
+    return undefined;
+  }
+
+  const level = (thinkingLevel ?? match[1] ?? "low").toLowerCase();
+  return level === "high" ? GEMINI_31_PRO_HIGH_MODEL : GEMINI_31_PRO_LOW_MODEL;
 }
 
 /**
@@ -271,7 +293,7 @@ export function resolveModelWithTier(
   const explicitQuota = isAntigravity || isImageModel;
 
   const isGemini3 = modelWithoutQuota.toLowerCase().startsWith("gemini-3");
-  const skipAlias = isAntigravity && isGemini3;
+  const skipAlias = isAntigravity && isGemini3 && !isImageModel;
 
   // For Antigravity Gemini 3 Pro models without explicit tier, append default tier.
   // Antigravity API: gemini-3-pro requires tier suffix (gemini-3-pro-low/high)
@@ -296,15 +318,20 @@ export function resolveModelWithTier(
         const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(modelWithoutQuota, tier);
         if (gemini35FlashBackendModel) {
           antigravityModel = gemini35FlashBackendModel;
-        } else if (isBaseProOnly && !tier && !isImageModel) {
-          // Only gemini-3-pro (3.0) uses tier suffix in model name.
-          antigravityModel = `${modelWithoutQuota}-low`;
-        } else if ((isGemini3Pro && !isBaseProOnly) && tier) {
-          // gemini-3.1+-pro with explicit tier: strip tier suffix, use bare name
-          // (thinkingLevel parameter handles the tier)
-          antigravityModel = baseName;
-        } else if (isGemini3Flash && tier) {
-          antigravityModel = baseName;
+        } else {
+          const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(modelWithoutQuota, tier);
+          if (gemini31ProBackendModel) {
+            antigravityModel = gemini31ProBackendModel;
+          } else if (isBaseProOnly && !tier && !isImageModel) {
+            // Only gemini-3-pro (3.0) uses tier suffix in model name.
+            antigravityModel = `${modelWithoutQuota}-low`;
+          } else if ((isGemini3Pro && !isBaseProOnly) && tier) {
+            // gemini-3.1+-pro with explicit tier: strip tier suffix, use bare name
+            // (thinkingLevel parameter handles the tier)
+            antigravityModel = baseName;
+          } else if (isGemini3Flash && tier) {
+            antigravityModel = baseName;
+          }
         }
       }
     }
@@ -330,7 +357,9 @@ export function resolveModelWithTier(
   }
 
   // Check if this is a Gemini 3 model (works for both aliased and skipAlias paths)
-  const isEffectiveGemini3 = resolvedModel.toLowerCase().includes("gemini-3");
+  const isEffectiveGemini3 =
+    resolvedModel.toLowerCase().includes("gemini-3") ||
+    resolvedModel === "gemini-pro-agent";
   const isClaudeThinking =
     resolvedModel.toLowerCase().includes("claude") &&
     resolvedModel.toLowerCase().includes("thinking");

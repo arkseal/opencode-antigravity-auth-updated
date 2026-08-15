@@ -17,6 +17,7 @@ export declare const THINKING_TIER_BUDGETS: {
         readonly low: 8192;
         readonly medium: 16384;
         readonly high: 32768;
+        readonly max: 32768;
     };
     readonly "gemini-2.5-pro": {
         readonly low: 8192;
@@ -49,6 +50,11 @@ export declare const GEMINI_3_THINKING_LEVELS: readonly ["minimal", "low", "medi
  * - Claude non-thinking: claude-{model} (no -thinking suffix)
  */
 export declare const MODEL_ALIASES: Record<string, string>;
+/**
+ * Resolves antigravity-gemini-3.1-pro to Cloud Code backend model ids.
+ * Maps low/default tier to gemini-3.1-pro-low and high tier to gemini-pro-agent.
+ */
+export declare function resolveAntigravityGemini31ProBackendModel(model: string, thinkingLevel?: string): string | undefined;
 /**
  * Cloud Code does not expose a bare `gemini-3.5-flash` backend id.
  * Antigravity/agy resolves the UI model to these advertised ids instead.
