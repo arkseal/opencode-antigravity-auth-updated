@@ -1,5 +1,14 @@
 import { exec } from "node:child_process";
 import { tool } from "@opencode-ai/plugin";
+
+// The @ai-sdk/google SDK (used by OpenCode's Google provider) validates for
+// GOOGLE_GENERATIVE_AI_API_KEY at initialization time, before the plugin's
+// auth.loader has a chance to intercept requests. Setting a dummy value here
+// prevents the SDK from throwing "API key is missing". The plugin's custom
+// fetch handler intercepts all actual API calls, so this value is never used.
+if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY = "antigravity-managed";
+}
 import {
   ANTIGRAVITY_DEFAULT_PROJECT_ID,
   ANTIGRAVITY_ENDPOINT,
