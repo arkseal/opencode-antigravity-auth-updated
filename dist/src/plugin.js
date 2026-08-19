@@ -1,10 +1,10 @@
 import { exec } from "node:child_process";
 import { tool } from "@opencode-ai/plugin";
-// The @ai-sdk/google SDK (used by OpenCode's Google provider) validates for
-// GOOGLE_GENERATIVE_AI_API_KEY at initialization time, before the plugin's
-// auth.loader has a chance to intercept requests. Setting a dummy value here
-// prevents the SDK from throwing "API key is missing". The plugin's custom
-// fetch handler intercepts all actual API calls, so this value is never used.
+// The @ai-sdk/google SDK validates for GOOGLE_GENERATIVE_AI_API_KEY at
+// initialization time, before the plugin's auth.loader can intercept requests.
+// Setting a dummy value prevents the fatal "API key is missing" startup error.
+// The plugin's custom fetch handler intercepts all actual API calls, so this
+// value is never sent to Google.
 if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = "antigravity-managed";
 }
@@ -1465,7 +1465,24 @@ export const createAntigravityPlugin = (providerId) => async ({ client, director
                         catch {
                             // ignore
                         }
-                        return {};
+                        // Return a custom fetch that intercepts requests and returns a
+                        // helpful error instead of falling through to the SDK which would
+                        // use GOOGLE_GENERATIVE_AI_API_KEY from the environment (if set)
+                        // and fail with "API key not valid" on Google's API.
+                        return {
+                            apiKey: "",
+                            async fetch(input, init) {
+                                if (isGenerativeLanguageRequest(input)) {
+                                    return new Response(JSON.stringify({
+                                        error: {
+                                            message: "No Antigravity accounts or API keys configured. Run `opencode auth login` to authenticate with Google.",
+                                            status: "UNAUTHENTICATED",
+                                        },
+                                    }), { status: 401, headers: { "Content-Type": "application/json" } });
+                                }
+                                return fetch(input, init);
+                            },
+                        };
                     }
                     return {
                         apiKey: "",
@@ -3291,6 +3308,13 @@ export const createAntigravityPlugin = (providerId) => async ({ client, director
 };
 export const AntigravityCLIOAuthPlugin = createAntigravityPlugin(ANTIGRAVITY_PROVIDER_ID);
 export const GoogleOAuthPlugin = AntigravityCLIOAuthPlugin;
+// V1 plugin module format: OpenCode's legacy loader treats every function
+// export as a separate plugin, which causes non-plugin exports
+// (authorizeAntigravity, exchangeAntigravity) to fail silently and abort
+// the entire plugin. The default export uses the V1 format so OpenCode
+// only calls the `server` function.
+const _default = { id: "opencode-antigravity-auth", server: AntigravityCLIOAuthPlugin };
+export default _default;
 function toUrlString(value) {
     if (typeof value === "string") {
         return value;

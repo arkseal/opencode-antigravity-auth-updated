@@ -21,6 +21,13 @@ describe("isOAuthAuth", () => {
     };
     expect(isOAuthAuth(auth)).toBe(false);
   });
+
+  it("returns false for null, undefined, or non-object values", () => {
+    expect(isOAuthAuth(null)).toBe(false);
+    expect(isOAuthAuth(undefined)).toBe(false);
+    expect(isOAuthAuth("oauth")).toBe(false);
+    expect(isOAuthAuth({})).toBe(false);
+  });
 });
 
 describe("parseRefreshParts", () => {

@@ -2,8 +2,9 @@ import type { AuthDetails, OAuthAuthDetails, RefreshParts } from "./types";
 
 const ACCESS_TOKEN_EXPIRY_BUFFER_MS = 60 * 1000;
 
-export function isOAuthAuth(auth: AuthDetails): auth is OAuthAuthDetails {
-  return auth.type === "oauth";
+export function isOAuthAuth(auth: unknown): auth is OAuthAuthDetails {
+  if (!auth || typeof auth !== "object") return false;
+  return (auth as OAuthAuthDetails).type === "oauth";
 }
 
 /**

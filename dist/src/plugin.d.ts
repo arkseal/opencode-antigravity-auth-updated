@@ -26,6 +26,8 @@ declare function createSoftQuotaBlockedResponse(input: {
 export declare const createAntigravityPlugin: (providerId: string) => ({ client, directory }: PluginContext) => Promise<PluginResult>;
 export declare const AntigravityCLIOAuthPlugin: ({ client, directory }: PluginContext) => Promise<PluginResult>;
 export declare const GoogleOAuthPlugin: ({ client, directory }: PluginContext) => Promise<PluginResult>;
+declare const _default: Record<string, unknown>;
+export default _default;
 declare function resolveQuotaFallbackHeaderStyle(input: {
     family: ModelFamily;
     headerStyle: HeaderStyle;
@@ -46,5 +48,4 @@ export declare const __testExports: {
     resolveHeaderRoutingDecision: typeof resolveHeaderRoutingDecision;
     resolveQuotaFallbackHeaderStyle: typeof resolveQuotaFallbackHeaderStyle;
 };
-export {};
 //# sourceMappingURL=plugin.d.ts.map

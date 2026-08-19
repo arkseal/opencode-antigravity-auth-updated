@@ -1,5 +1,7 @@
 const ACCESS_TOKEN_EXPIRY_BUFFER_MS = 60 * 1000;
 export function isOAuthAuth(auth) {
+    if (!auth || typeof auth !== "object")
+        return false;
     return auth.type === "oauth";
 }
 /**

@@ -28,7 +28,7 @@ vi.mock("./plugin/storage", async (importOriginal) => {
   };
 });
 
-const { createAntigravityPlugin } = await import("./plugin");
+const { createAntigravityPlugin, AntigravityCLIOAuthPlugin, default: pluginDefault } = await import("./plugin");
 const storageModule = await import("./plugin/storage");
 
 const client = {
@@ -327,6 +327,90 @@ describe("createAntigravityPlugin auth.loader disk OAuth promotion", () => {
       // CRITICAL: client.auth.set must NOT have been called — doing so would
       // wipe OpenCode's api-key auth for the google provider.
       expect(authSetSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
+describe("V1 plugin module format default export", () => {
+  it("exports V1 plugin module definition with id and server function", () => {
+    expect(pluginDefault).toEqual({
+      id: "opencode-antigravity-auth",
+      server: AntigravityCLIOAuthPlugin,
+    });
+  });
+});
+
+describe("createAntigravityPlugin unauthenticated auth.loader", () => {
+  beforeEach(() => {
+    vi.mocked(storageModule.loadAccounts).mockReset();
+    vi.mocked(storageModule.loadAccounts).mockResolvedValue(null);
+  });
+
+  it("returns 401 with informative error for generative language requests when unauthenticated", async () => {
+    const plugin = await createAntigravityPlugin("google")({
+      client,
+      directory: process.cwd(),
+    });
+
+    const loader = await plugin.auth.loader(
+      async () => undefined as any,
+      {
+        id: "google",
+        api: "https://generativelanguage.googleapis.com/v1beta",
+        npm: "@ai-sdk/google",
+        models: {},
+      },
+    );
+
+    expect(loader).toMatchObject({ apiKey: "" });
+    expect(loader).toHaveProperty("fetch");
+
+    const response = await (loader as { fetch: typeof fetch }).fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      { method: "POST", body: "{}" },
+    );
+
+    expect(response.status).toBe(401);
+    const json = await response.json();
+    expect(json).toEqual({
+      error: {
+        message: "No Antigravity accounts or API keys configured. Run `opencode auth login` to authenticate with Google.",
+        status: "UNAUTHENTICATED",
+      },
+    });
+  });
+
+  it("falls through to standard fetch for non-generative-language requests", async () => {
+    const fetchMock = vi.fn(async () => new Response("fallback-ok", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    try {
+      const plugin = await createAntigravityPlugin("google")({
+        client,
+        directory: process.cwd(),
+      });
+
+      const loader = await plugin.auth.loader(
+        async () => undefined as any,
+        {
+          id: "google",
+          api: "https://generativelanguage.googleapis.com/v1beta",
+          npm: "@ai-sdk/google",
+          models: {},
+        },
+      );
+
+      const response = await (loader as { fetch: typeof fetch }).fetch(
+        "https://example.com/other-endpoint",
+        { method: "GET" },
+      );
+
+      expect(response.status).toBe(200);
+      const text = await response.text();
+      expect(text).toBe("fallback-ok");
+      expect(fetchMock).toHaveBeenCalled();
     } finally {
       vi.unstubAllGlobals();
     }
