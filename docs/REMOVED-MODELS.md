@@ -24,6 +24,7 @@ The following models were removed from `OPENCODE_MODEL_DEFINITIONS` and active r
 | `gemini-3.5-flash` | `gemini-cli` | **HTTP 404 (Not Found)** | Gemini 3.5 Flash requires Antigravity client metadata and backend routing (`gemini-3.5-flash-low` / `gemini-3-flash-agent`). Use `antigravity-gemini-3.5-flash`. |
 | `gemini-3.6-flash` | `gemini-cli` | **HTTP 404 (Not Found)** | Gemini 3.6 Flash requires Antigravity client metadata and backend routing. Use `antigravity-gemini-3.6-flash`. |
 | `gemini-3.7-flash` | `gemini-cli` | **HTTP 404 (Not Found)** | Gemini 3.7 Flash requires Antigravity client metadata and backend routing (`gemini-3.7-flash-tiered`). Use `antigravity-gemini-3.7-flash`. |
+| `gemini-3.8-flash` | `gemini-cli` | **HTTP 404 (Not Found)** | Gemini 3.8 Flash requires Antigravity client metadata and backend routing (`gemini-3.8-flash-tiered`). Use `antigravity-gemini-3.8-flash`. |
 | `gemini-3.1-pro` | `gemini-cli` | **HTTP 404 (Not Found)** | Bare `gemini-3.1-pro` without Antigravity headers returns 404. Use `antigravity-gemini-3.1-pro`. |
 | `gemini-3.1-pro-preview-customtools` | `gemini-cli` | **HTTP 404 (Not Found)** | Deprecated preview endpoint. Use `antigravity-gemini-3.1-pro`. |
 | `gemini-2.5-pro` | `gemini-cli` / `antigravity` | **HTTP 503 (No Capacity)** | Persistent capacity exhaustion (`No capacity available for model gemini-2.5-pro on the server`). Use `antigravity-gemini-3.1-pro` or `antigravity-gemini-3.7-flash`. |
@@ -39,6 +40,7 @@ The following models were removed from `OPENCODE_MODEL_DEFINITIONS` and active r
 | `antigravity-gemini-3.5-flash` | `minimal`, `low`, `medium`, `high` | `gemini-3.5-flash-low` / `gemini-3-flash-agent` | Gemini 3.5 Flash |
 | `antigravity-gemini-3.6-flash` | `minimal`, `low`, `medium`, `high` | `gemini-3.6-flash-low` / `gemini-3.6-flash-medium` / `gemini-3.6-flash-high` | Gemini 3.6 Flash |
 | `antigravity-gemini-3.7-flash` | `minimal`, `low`, `medium`, `high` | `gemini-3.7-flash-tiered` | Gemini 3.7 Flash |
+| `antigravity-gemini-3.8-flash` | `minimal`, `low`, `medium`, `high` | `gemini-3.8-flash-tiered` | Gemini 3.8 Flash |
 | `antigravity-claude-sonnet-4-6` | — | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | `antigravity-claude-opus-4-6-thinking` | `low` (8k), `max` (32k) | `claude-opus-4-6-thinking` | Claude Opus 4.6 Extended Thinking |
 | `gemini-2.5-flash` | — | `gemini-2.5-flash` | Gemini 2.5 Flash |

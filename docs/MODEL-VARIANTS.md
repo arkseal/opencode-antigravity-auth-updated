@@ -75,9 +75,9 @@ Gemini 3 models use string-based thinking levels. Available levels differ by mod
 }
 ```
 
-### Gemini 3 Flash / 3.5 Flash / 3.6 Flash / 3.7 Flash Example
+### Gemini 3 Flash / 3.5 Flash / 3.6 Flash / 3.7 Flash / 3.8 Flash Example
 
-Gemini Flash models expose `minimal`, `low`, `medium`, and `high` thinking levels. Use `antigravity-gemini-3-flash`, `antigravity-gemini-3.5-flash`, `antigravity-gemini-3.6-flash`, or `antigravity-gemini-3.7-flash` when available in your rollout.
+Gemini Flash models expose `minimal`, `low`, `medium`, and `high` thinking levels. Use `antigravity-gemini-3-flash`, `antigravity-gemini-3.5-flash`, `antigravity-gemini-3.6-flash`, `antigravity-gemini-3.7-flash`, or `antigravity-gemini-3.8-flash` when available in your rollout.
 
 ```json
 {

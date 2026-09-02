@@ -1,9 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [1.8.0] - 2026-09-02
 
 ### Added
 
+- **Gemini 3.8 Flash** - Added `antigravity-gemini-3.8-flash` with thinking level variants (`minimal`, `low`, `medium`, `high`) across Antigravity, Gemini CLI, and Gemini API paths.
 - **Gemini 3.6 Flash & Gemini 3.7 Flash** - Added `antigravity-gemini-3.6-flash` and `antigravity-gemini-3.7-flash` with thinking level variants (`minimal`, `low`, `medium`, `high`) across Antigravity, Gemini CLI, and Gemini API paths.
 - **Gemini 3.5 Flash** - Added `gemini-3.5-flash` across both quota pools: Antigravity (`antigravity-gemini-3.5-flash`) and Gemini CLI (bare `gemini-3.5-flash`). Flash exposes `minimal`/`low`/`medium`/`high` thinking levels. Rollout-dependent.
 
@@ -16,7 +17,7 @@
 
 ### Changed
 
-- **Bare Gemini CLI names for 3.1+** - Dotted-minor generations now use bare model names on the Gemini CLI backend (e.g. `gemini-3.1-pro`, `gemini-3.5-flash`, `gemini-3.6-flash`, `gemini-3.7-flash`) instead of the legacy `-preview` suffix, matching the `agy`/`gemini` CLIs. Renamed the `gemini-3.1-pro-preview` entry to `gemini-3.1-pro`. The 3.0 line (`gemini-3-pro-preview`, `gemini-3-flash-preview`) and the legacy `gemini-3.1-pro-preview-customtools` entry are unchanged, and previously-configured model strings still route via the resolver.
+- **Bare Gemini CLI names for 3.1+** - Dotted-minor generations now use bare model names on the Gemini CLI backend (e.g. `gemini-3.1-pro`, `gemini-3.5-flash`, `gemini-3.6-flash`, `gemini-3.7-flash`, `gemini-3.8-flash`) instead of the legacy `-preview` suffix, matching the `agy`/`gemini` CLIs. Renamed the `gemini-3.1-pro-preview` entry to `gemini-3.1-pro`. The 3.0 line (`gemini-3-pro-preview`, `gemini-3-flash-preview`) and the legacy `gemini-3.1-pro-preview-customtools` entry are unchanged, and previously-configured model strings still route via the resolver.
 - **Model Endpoint Audit & Pruning** - Pruned deprecated model endpoints and updated backend routing.
 
 ## [1.6.0] - 2026-02-20

@@ -99,6 +99,7 @@ const modelsToTest = [
   { id: "antigravity-gemini-3.5-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-gemini-3.6-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-gemini-3.7-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
+  { id: "antigravity-gemini-3.8-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-claude-sonnet-4-6", style: "antigravity", variants: [null] },
   { id: "antigravity-claude-opus-4-6-thinking", style: "antigravity", variants: ["low", "max"] },
   
