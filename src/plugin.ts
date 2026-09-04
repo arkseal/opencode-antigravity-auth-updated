@@ -1,5 +1,9 @@
 import { exec } from "node:child_process";
 import { tool } from "@opencode-ai/plugin";
+import { fetchAllAccountsQuota } from "./plugin/quota-summary/api";
+import { formatQuotaReport } from "./plugin/quota-summary/formatter";
+import { ensureQuotaCommandInstalled } from "./plugin/quota-summary/command";
+import type { StoredAccount } from "./plugin/quota-summary/types";
 
 // The @ai-sdk/google SDK validates for GOOGLE_GENERATIVE_AI_API_KEY at
 // initialization time, before the plugin's auth.loader can intercept requests.
@@ -1543,6 +1547,9 @@ export const createAntigravityPlugin = (providerId: string) => async (
   
   // Fetch latest Antigravity version from remote API (non-blocking, falls back to hardcoded)
   await initAntigravityVersion();
+
+  // Ensure /antigravity-quota command file exists in OpenCode command directory
+  ensureQuotaCommandInstalled().catch(() => {});
   
   // Initialize health tracker for hybrid strategy
   if (config.health_score) {
@@ -1699,10 +1706,36 @@ export const createAntigravityPlugin = (providerId: string) => async (
     },
   });
 
+  // Create antigravity_quota tool for multi-account quota monitoring
+  const antigravityQuotaTool = tool({
+    description: "Get antigravity quota for all accounts",
+    args: {
+      _placeholder: tool.schema
+        .boolean()
+        .optional()
+        .default(true)
+        .describe("Placeholder parameter. Always pass true."),
+    },
+    async execute(_args, _ctx) {
+      log.debug("Antigravity Quota tool called");
+
+      const stored = await loadAccounts().catch(() => null);
+      const accounts: StoredAccount[] = (stored?.accounts as StoredAccount[]) || [];
+
+      if (accounts.length === 0) {
+        return "No accounts configured in antigravity-accounts.json.";
+      }
+
+      const results = await fetchAllAccountsQuota(accounts);
+      return formatQuotaReport(results, accounts);
+    },
+  });
+
   return {
     event: eventHandler,
     tool: {
       google_search: googleSearchTool,
+      antigravity_quota: antigravityQuotaTool,
     },
     provider: {
       id: providerId,

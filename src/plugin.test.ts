@@ -415,4 +415,26 @@ describe("createAntigravityPlugin unauthenticated auth.loader", () => {
       vi.unstubAllGlobals();
     }
   });
+
+  it("exports google_search and antigravity_quota tools", async () => {
+    const plugin = await createAntigravityPlugin("google")({
+      client,
+      directory: process.cwd(),
+    });
+
+    expect(plugin.tool).toBeDefined();
+    expect(plugin.tool?.google_search).toBeDefined();
+    expect(plugin.tool?.antigravity_quota).toBeDefined();
+  });
+
+  it("antigravity_quota returns message when no accounts exist", async () => {
+    vi.mocked(storageModule.loadAccounts).mockResolvedValue(null);
+    const plugin = await createAntigravityPlugin("google")({
+      client,
+      directory: process.cwd(),
+    });
+
+    const result = await (plugin.tool?.antigravity_quota as any).execute({}, {} as any);
+    expect(result).toBe("No accounts configured in antigravity-accounts.json.");
+  });
 });
