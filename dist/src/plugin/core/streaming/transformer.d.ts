@@ -1,7 +1,8 @@
 import type { SignatureStore, StreamingCallbacks, StreamingOptions, ThoughtBuffer } from './types';
+import { MathStreamBuffer } from '../../transform/math';
 export declare function createThoughtBuffer(): ThoughtBuffer;
 export declare function transformStreamingPayload(payload: string, transformThinkingParts?: (response: unknown) => unknown): string;
-export declare function deduplicateThinkingText(response: unknown, sentBuffer: ThoughtBuffer, displayedThinkingHashes?: Set<string>): unknown;
+export declare function deduplicateThinkingText(response: unknown, sentBuffer: ThoughtBuffer, displayedThinkingHashes?: Set<string>, mathBuffers?: Map<number, MathStreamBuffer>, formatMath?: boolean): unknown;
 export declare function transformSseLine(line: string, signatureStore: SignatureStore, thoughtBuffer: ThoughtBuffer, sentThinkingBuffer: ThoughtBuffer, callbacks: StreamingCallbacks, options: StreamingOptions, debugState: {
     injected: boolean;
 }): string;

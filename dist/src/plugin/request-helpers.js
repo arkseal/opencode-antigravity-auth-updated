@@ -1,8 +1,9 @@
-import { getKeepThinking } from "./config/index.js";
+import { getKeepThinking, getFormatMath } from "./config/index.js";
 import { createLogger } from "./logger.js";
 import { cacheSignature } from "./cache.js";
 import { EMPTY_SCHEMA_PLACEHOLDER_NAME, EMPTY_SCHEMA_PLACEHOLDER_DESCRIPTION, SKIP_THOUGHT_SIGNATURE, } from "../constants.js";
 import { processImageData } from "./image-saver.js";
+import { latexToUnicode } from "./transform/math/index.js";
 const log = createLogger("request-helpers");
 const ANTIGRAVITY_PREVIEW_LINK = "https://goo.gle/enable-preview-features"; // TODO: Update to Antigravity link if available
 // ============================================================================
@@ -1168,6 +1169,13 @@ function transformGeminiCandidate(candidate) {
                 return { text: result };
             }
         }
+        // Transform LaTeX math in text parts if format_math is enabled
+        if (typeof part.text === "string" && getFormatMath()) {
+            return {
+                ...part,
+                text: latexToUnicode(part.text),
+            };
+        }
         return part;
     });
     return {
@@ -1213,7 +1221,12 @@ export function transformThinkingParts(response) {
                 transformedContent.push(transformed);
             }
             else {
-                transformedContent.push(block);
+                if (getFormatMath() && block && typeof block === "object" && typeof block.text === "string") {
+                    transformedContent.push({ ...block, text: latexToUnicode(block.text) });
+                }
+                else {
+                    transformedContent.push(block);
+                }
             }
         }
         result.content = transformedContent;

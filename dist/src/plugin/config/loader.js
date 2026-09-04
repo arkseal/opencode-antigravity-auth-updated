@@ -137,4 +137,7 @@ export function initRuntimeConfig(config) {
 export function getKeepThinking() {
     return runtimeConfig?.keep_thinking ?? false;
 }
+export function getFormatMath() {
+    return runtimeConfig?.format_math ?? true;
+}
 //# sourceMappingURL=loader.js.map

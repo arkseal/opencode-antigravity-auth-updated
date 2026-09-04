@@ -33,4 +33,5 @@ export declare function configExists(path: string): boolean;
 export declare function getDefaultLogsDir(): string;
 export declare function initRuntimeConfig(config: AntigravityConfig): void;
 export declare function getKeepThinking(): boolean;
+export declare function getFormatMath(): boolean;
 //# sourceMappingURL=loader.d.ts.map
