@@ -619,14 +619,17 @@ describe("transform/gemini", () => {
 
   describe("buildImageGenerationConfig", () => {
     const originalEnv = process.env;
+    let warnSpy: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
       // Reset environment before each test
       vi.resetModules();
       process.env = { ...originalEnv };
+      warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     });
 
     afterEach(() => {
+      warnSpy.mockRestore();
       process.env = originalEnv;
     });
 
@@ -655,12 +658,18 @@ describe("transform/gemini", () => {
       process.env.OPENCODE_IMAGE_ASPECT_RATIO = "invalid";
       const config = buildImageGenerationConfig();
       expect(config).toEqual({ aspectRatio: "1:1" });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[gemini] Invalid aspect ratio "invalid"'),
+      );
     });
 
     it("falls back to 1:1 for unsupported aspect ratio", () => {
       process.env.OPENCODE_IMAGE_ASPECT_RATIO = "5:3";
       const config = buildImageGenerationConfig();
       expect(config).toEqual({ aspectRatio: "1:1" });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[gemini] Invalid aspect ratio "5:3"'),
+      );
     });
   });
 
