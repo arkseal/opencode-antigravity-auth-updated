@@ -732,6 +732,18 @@ describe("transformThinkingParts", () => {
     expect(result.reasoning_content).toBe("my thoughts");
   });
 
+  it("transforms LaTeX math in response text parts when format_math is enabled", () => {
+    const candidate = {
+      content: {
+        parts: [
+          { text: "Here is the flow: $A \\to B$ and $x^2$." },
+        ],
+      },
+    };
+    const transformed = transformThinkingParts({ candidates: [candidate] }) as any;
+    expect(transformed.candidates[0].content.parts[0].text).toBe("Here is the flow: A → B and x².");
+  });
+
   it("transforms Gemini-style candidates", () => {
     const response = {
       candidates: [

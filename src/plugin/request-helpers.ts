@@ -1,4 +1,4 @@
-import { getKeepThinking } from "./config";
+import { getKeepThinking, getFormatMath } from "./config";
 import { createLogger } from "./logger";
 import { cacheSignature } from "./cache";
 import {
@@ -7,6 +7,7 @@ import {
   SKIP_THOUGHT_SIGNATURE,
 } from "../constants";
 import { processImageData } from "./image-saver";
+import { latexToUnicode } from "./transform/math";
 import type { GoogleSearchConfig } from "./transform/types";
 
 const log = createLogger("request-helpers");
@@ -1471,6 +1472,14 @@ function transformGeminiCandidate(candidate: any): any {
       }
     }
 
+    // Transform LaTeX math in text parts if format_math is enabled
+    if (typeof part.text === "string" && getFormatMath()) {
+      return {
+        ...part,
+        text: latexToUnicode(part.text),
+      };
+    }
+
     return part;
   });
 
@@ -1521,7 +1530,11 @@ export function transformThinkingParts(response: unknown): unknown {
 
         transformedContent.push(transformed);
       } else {
-        transformedContent.push(block);
+        if (getFormatMath() && block && typeof block === "object" && typeof (block as any).text === "string") {
+          transformedContent.push({ ...(block as any), text: latexToUnicode((block as any).text) });
+        } else {
+          transformedContent.push(block);
+        }
       }
     }
     result.content = transformedContent;
