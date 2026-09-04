@@ -8,7 +8,7 @@ import { insertNode as _$insertNode } from "@opentui/solid";
 import { setProp as _$setProp } from "@opentui/solid";
 import { createElement as _$createElement } from "@opentui/solid";
 import { createSignal, For, Show, createRoot, onCleanup, onMount } from "solid-js";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, promises as fs } from "fs";
 
 // src/plugin/quota-summary/constants.ts
 import * as path from "path";
@@ -189,6 +189,8 @@ async function fetchAccountQuota(account) {
 
 // src/tui.tsx
 var TUI_PLUGIN_ID = "antigravity-quota.tui";
+var QUOTA_REFRESH_INTERVAL_MS = 5 * 60 * 1e3;
+var COUNTDOWN_TICK_INTERVAL_MS = 10 * 1e3;
 function getResetTimeString(bucket, now) {
   if (!bucket) return "Ready";
   const frac = bucket.remainingFraction ?? 0;
@@ -219,7 +221,7 @@ function SidebarQuota(props) {
       if (!configPath) {
         throw new Error("Configuration file not found.");
       }
-      const content = readFileSync(configPath, "utf-8");
+      const content = await fs.readFile(configPath, "utf-8");
       const data = JSON.parse(content);
       const accounts = data.accounts || [];
       accounts.forEach((acc, index) => {
@@ -240,8 +242,8 @@ function SidebarQuota(props) {
   };
   onMount(() => {
     updateQuota();
-    const fetchInterval = setInterval(updateQuota, 5 * 60 * 1e3);
-    const tickInterval = setInterval(() => setNow(Date.now()), 10 * 1e3);
+    const fetchInterval = setInterval(updateQuota, QUOTA_REFRESH_INTERVAL_MS);
+    const tickInterval = setInterval(() => setNow(Date.now()), COUNTDOWN_TICK_INTERVAL_MS);
     onCleanup(() => {
       clearInterval(fetchInterval);
       clearInterval(tickInterval);

@@ -7,13 +7,15 @@ import type {
   TuiThemeCurrent 
 } from "@opencode-ai/plugin/tui";
 import { createSignal, For, Show, createRoot, onCleanup, onMount } from "solid-js";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import { CONFIG_PATHS } from "./plugin/quota-summary/constants";
 import type { AccountQuotaResult, QuotaBucket, StoredAccount } from "./plugin/quota-summary/types";
 import { fetchAccountQuota } from "./plugin/quota-summary/api";
 import { formatBucketLabel, formatDuration, miniProgressBar, shortEmail } from "./plugin/quota-summary/utils";
 
 const TUI_PLUGIN_ID = "antigravity-quota.tui";
+const QUOTA_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const COUNTDOWN_TICK_INTERVAL_MS = 10 * 1000; // 10 seconds
 
 function getResetTimeString(bucket: QuotaBucket | undefined, now: number): string {
   if (!bucket) return "Ready";
@@ -50,7 +52,7 @@ function SidebarQuota(props: {
       if (!configPath) {
         throw new Error("Configuration file not found.");
       }
-      const content = readFileSync(configPath, "utf-8");
+      const content = await fs.readFile(configPath, "utf-8");
       const data = JSON.parse(content) as { accounts?: StoredAccount[] };
       const accounts = data.accounts || [];
 
@@ -76,8 +78,8 @@ function SidebarQuota(props: {
   // Run on mount
   onMount(() => {
     updateQuota();
-    const fetchInterval = setInterval(updateQuota, 5 * 60 * 1000); // every 5 minutes
-    const tickInterval = setInterval(() => setNow(Date.now()), 10 * 1000); // tick countdown every 10 seconds
+    const fetchInterval = setInterval(updateQuota, QUOTA_REFRESH_INTERVAL_MS);
+    const tickInterval = setInterval(() => setNow(Date.now()), COUNTDOWN_TICK_INTERVAL_MS);
     onCleanup(() => {
       clearInterval(fetchInterval);
       clearInterval(tickInterval);
