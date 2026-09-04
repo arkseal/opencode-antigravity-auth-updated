@@ -414,6 +414,10 @@
       "default": true,
       "type": "boolean",
       "description": "Enable automatic plugin updates."
+    },
+    "format_math": {
+      "default": true,
+      "type": "boolean"
     }
   },
   "additionalProperties": false

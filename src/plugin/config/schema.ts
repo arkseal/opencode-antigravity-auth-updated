@@ -509,6 +509,12 @@ export const AntigravityConfigSchema = z.object({
    */
   auto_update: z.boolean().default(true),
 
+  /**
+   * Enable converting Gemini LaTeX math, arrows, and symbols to clean Unicode.
+   * @default true
+   */
+  format_math: z.boolean().default(true),
+
 });
 
 export type AntigravityConfig = z.infer<typeof AntigravityConfigSchema>;
@@ -519,6 +525,7 @@ export type SignatureCacheConfig = z.infer<typeof SignatureCacheConfigSchema>;
  */
 export const DEFAULT_CONFIG: AntigravityConfig = {
   quiet_mode: false,
+  format_math: true,
   toast_scope: 'root_only',
   debug: false,
   debug_tui: false,

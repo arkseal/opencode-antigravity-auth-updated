@@ -83,3 +83,9 @@ describe("model_discovery config", () => {
     });
   });
 });
+
+describe("format_math config", () => {
+  it("includes format_math default in DEFAULT_CONFIG", () => {
+    expect(DEFAULT_CONFIG).toHaveProperty("format_math", true);
+  });
+});

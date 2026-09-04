@@ -162,3 +162,7 @@ export function initRuntimeConfig(config: AntigravityConfig): void {
 export function getKeepThinking(): boolean {
   return runtimeConfig?.keep_thinking ?? false;
 }
+
+export function getFormatMath(): boolean {
+  return runtimeConfig?.format_math ?? true;
+}
