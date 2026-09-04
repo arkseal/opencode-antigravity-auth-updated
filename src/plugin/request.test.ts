@@ -453,6 +453,21 @@ describe("request.ts", () => {
       const result = callTransformSseLine(line);
       expect(result).toContain("data:");
     });
+
+    it("transforms LaTeX math in streaming text parts", () => {
+      const payload = {
+        response: {
+          candidates: [{
+            content: {
+              parts: [{ text: "Next $x \\to y$ done" }]
+            }
+          }]
+        }
+      };
+      const line = `data: ${JSON.stringify(payload)}`;
+      const result = callTransformSseLine(line);
+      expect(result).toContain("Next x → y done");
+    });
   });
 
   describe("transformStreamingPayload", () => {
@@ -532,6 +547,40 @@ describe("request.ts", () => {
       
       const output = outputChunks.map(chunk => decoder.decode(chunk)).join("");
       expect(output).toContain("[DONE]");
+    });
+
+    it("transforms split math expressions across chunks in real-time stream", async () => {
+      const store = createMockSignatureStore();
+      const transformer = createStreamingTransformer(store, defaultCallbacks);
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      const chunk1 = encoder.encode(
+        `data: {"response":{"candidates":[{"content":{"parts":[{"text":"Check $a \\\\"}]}}]}}\n`
+      );
+      const chunk2 = encoder.encode(
+        `data: {"response":{"candidates":[{"content":{"parts":[{"text":"to b$ output"}]}}]}}\n`
+      );
+
+      const outputChunks: Uint8Array[] = [];
+      const writer = transformer.writable.getWriter();
+      const reader = transformer.readable.getReader();
+
+      const readPromise = (async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) outputChunks.push(value);
+        }
+      })();
+
+      await writer.write(chunk1);
+      await writer.write(chunk2);
+      await writer.close();
+      await readPromise;
+
+      const output = outputChunks.map(chunk => decoder.decode(chunk)).join("");
+      expect(output).toContain("a → b output");
     });
   });
 

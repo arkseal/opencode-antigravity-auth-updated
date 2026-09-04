@@ -1,3 +1,5 @@
+import type { MathStreamBuffer } from '../../transform/math';
+
 export interface SignedThinking {
   text: string;
   signature: string;
@@ -22,6 +24,8 @@ export interface StreamingOptions {
   debugText?: string;
   cacheSignatures?: boolean;
   displayedThinkingHashes?: Set<string>;
+  formatMath?: boolean;
+  mathBuffers?: Map<number, MathStreamBuffer>;
   // Note: injectSyntheticThinking removed - keep_thinking now unified with debug via debugText
 }
 

@@ -5,6 +5,8 @@ import type {
   ThoughtBuffer,
 } from './types';
 import { processImageData } from '../../image-saver';
+import { getFormatMath } from '../../config';
+import { latexToUnicode, MathStreamBuffer } from '../../transform/math';
 
 /**
  * Simple string hash for thinking deduplication.
@@ -59,9 +61,12 @@ export function deduplicateThinkingText(
   response: unknown,
   sentBuffer: ThoughtBuffer,
   displayedThinkingHashes?: Set<string>,
+  mathBuffers?: Map<number, MathStreamBuffer>,
+  formatMath?: boolean,
 ): unknown {
   if (!response || typeof response !== 'object') return response;
 
+  const shouldFormatMath = formatMath ?? getFormatMath();
   const resp = response as Record<string, unknown>;
 
   if (Array.isArray(resp.candidates)) {
@@ -114,6 +119,22 @@ export function deduplicateThinkingText(
           sentBuffer.set(index, fullText);
           return part;
         }
+
+        // Regular text parts: transform LaTeX math to Unicode if enabled
+        if (typeof p.text === 'string' && shouldFormatMath) {
+          if (mathBuffers) {
+            let mathBuf = mathBuffers.get(index);
+            if (!mathBuf) {
+              mathBuf = new MathStreamBuffer();
+              mathBuffers.set(index, mathBuf);
+            }
+            const transformedText = mathBuf.process(p.text);
+            return { ...p, text: transformedText };
+          } else {
+            return { ...p, text: latexToUnicode(p.text) };
+          }
+        }
+
         return part;
       });
 
@@ -162,6 +183,23 @@ export function deduplicateThinkingText(
         thinkingIndex++;
         return block;
       }
+
+      // Regular text block in Anthropic content array
+      if (b && typeof b === 'object' && typeof (b as any).text === 'string' && shouldFormatMath) {
+        const CLAUDE_KEY = 0;
+        if (mathBuffers) {
+          let mathBuf = mathBuffers.get(CLAUDE_KEY);
+          if (!mathBuf) {
+            mathBuf = new MathStreamBuffer();
+            mathBuffers.set(CLAUDE_KEY, mathBuf);
+          }
+          const transformedText = mathBuf.process((b as any).text);
+          return { ...b, text: transformedText };
+        } else {
+          return { ...b, text: latexToUnicode((b as any).text) };
+        }
+      }
+
       return block;
     });
 
@@ -205,7 +243,9 @@ export function transformSseLine(
       let response: unknown = deduplicateThinkingText(
         parsed.response,
         sentThinkingBuffer,
-        options.displayedThinkingHashes
+        options.displayedThinkingHashes,
+        options.mathBuffers,
+        options.formatMath,
       );
 
       if (options.debugText && callbacks.onInjectDebug && !debugState.injected) {
@@ -298,6 +338,11 @@ export function createStreamingTransformer(
   let buffer = '';
   const thoughtBuffer = createThoughtBuffer();
   const sentThinkingBuffer = createThoughtBuffer();
+  const mathBuffers = options.mathBuffers ?? new Map<number, MathStreamBuffer>();
+  const effectiveOptions: StreamingOptions = {
+    ...options,
+    mathBuffers,
+  };
   const debugState = { injected: false };
   let hasSeenUsageMetadata = false;
 
@@ -320,7 +365,7 @@ export function createStreamingTransformer(
           thoughtBuffer,
           sentThinkingBuffer,
           callbacks,
-          options,
+          effectiveOptions,
           debugState,
         );
         controller.enqueue(encoder.encode(transformedLine + '\n'));
@@ -339,10 +384,30 @@ export function createStreamingTransformer(
           thoughtBuffer,
           sentThinkingBuffer,
           callbacks,
-          options,
+          effectiveOptions,
           debugState,
         );
         controller.enqueue(encoder.encode(transformedLine));
+      }
+
+      // Flush any pending math expressions
+      for (const [candIdx, mathBuf] of mathBuffers.entries()) {
+        const remaining = mathBuf.flush();
+        if (remaining) {
+          const flushPayload = {
+            response: {
+              candidates: [
+                {
+                  index: candIdx,
+                  content: {
+                    parts: [{ text: remaining }],
+                  },
+                },
+              ],
+            },
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(flushPayload)}\n\n`));
+        }
       }
 
       // Inject synthetic usage metadata if missing (fixes "Context % used: 0%" issue)
