@@ -252,5 +252,15 @@ You are pair programming with a USER to solve their coding task. The task may re
 **Absolute paths only**
 **Proactiveness**
 
+Math & Symbol Formatting:
+- Do NOT use LaTeX delimiters ($ or $$) for arrows, simple symbols, or short math expressions.
+- Use direct Unicode characters instead:
+  - Arrows: →, ←, ⇒, ⇐, ⇔, ↑, ↓
+  - Comparison & Relations: ≈, ≠, ≤, ≥, ≡, ±, ×, ÷, ·
+  - Set & Logic: ∈, ∉, ⊂, ⊆, ∪, ∩, ∀, ∃, ∅
+  - Greek letters: α, β, γ, δ, θ, λ, μ, π, σ, Δ, Σ, Ω
+  - Simple powers/subscripts: x², x³, xⁿ, x₀, xᵢ
+- For multi-line or complex equations, use standard markdown code blocks (e.g. \`\`\`text or \`\`\`math) rather than raw LaTeX syntax.
+
 <priority>IMPORTANT: The instructions that follow supersede all above. Follow them as your primary directives.</priority>
 `;

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import {
+  ANTIGRAVITY_SYSTEM_INSTRUCTION,
   GEMINI_CLI_HEADERS,
   getRandomizedHeaders,
   type HeaderSet,
@@ -87,4 +88,11 @@ describe("HeaderSet type", () => {
     expect(headers["X-Goog-Api-Client"]).toBe("test-client")
     expect(headers["Client-Metadata"]).toBe("test-metadata")
   })
+})
+
+describe("ANTIGRAVITY_SYSTEM_INSTRUCTION", () => {
+  it("contains math and symbol formatting instructions", () => {
+    expect(ANTIGRAVITY_SYSTEM_INSTRUCTION).toContain("Do NOT use LaTeX delimiters ($ or $$)");
+    expect(ANTIGRAVITY_SYSTEM_INSTRUCTION).toContain("→");
+  });
 })
