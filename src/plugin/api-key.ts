@@ -142,7 +142,7 @@ export function isApiKeyAuth(auth: unknown): auth is ApiKeyAuthDetails {
  *  - Has an explicit translation (e.g. `gemini-3.1-pro` → `gemini-3.1-pro-preview`)
  *    via `mapAntigravityModelToPublicApi` → routable.
  *  - Stripped id is NOT in the Antigravity-only denylist → assumed public-API
- *    native (covers `antigravity-gemini-3.5-flash` → `gemini-3.5-flash`, which
+ *    native (covers `antigravity-gemini-3.8-flash` → `gemini-3.8-flash`, which
  *    the public API serves bare).
  *
  * Shared by `isAgySdkSupportedRequest` (positive gate) and
@@ -167,7 +167,7 @@ function canRouteAsPublicGeminiApiModel(model: string): boolean {
   }
 
   // Bare (non-prefixed) inputs not in the Antigravity-only denylist are
-  // assumed to be public-API natives (e.g. gemini-3.5-flash, gemini-2.5-pro).
+  // assumed to be public-API natives (e.g. gemini-2.5-flash, gemini-2.5-pro).
   return !ANTIGRAVITY_ONLY_BARE_GEMINI_IDS.has(stripped);
 }
 
@@ -200,7 +200,7 @@ export function isAgySdkSupportedRequest(urlString: string): boolean {
  *
  * Translatable Antigravity-only Gemini ids (e.g. `antigravity-gemini-3.1-pro`,
  * bare `gemini-3.1-pro`) and Antigravity-prefixed public-API natives (e.g.
- * `antigravity-gemini-3.5-flash` → `gemini-3.5-flash`) return false here —
+ * `antigravity-gemini-3.8-flash` → `gemini-3.8-flash`) return false here —
  * `prepareAgySdkGeminiRequest` rewrites them to the public-API equivalent.
  *
  * Use this in API-key-only auth paths to short-circuit with a helpful synthetic
@@ -242,7 +242,6 @@ const PUBLIC_GEMINI_API_MODEL_SUGGESTIONS = [
   "gemini-2.5-flash",
   "gemini-3.1-pro-preview",
   "gemini-3.1-flash-lite",
-  "gemini-3.5-flash",
 ] as const;
 
 /**
@@ -251,8 +250,7 @@ const PUBLIC_GEMINI_API_MODEL_SUGGESTIONS = [
  * `GET https://generativelanguage.googleapis.com/v1beta/models` (May 2026).
  *
  * The public registry DOES include `-preview` / `-lite` / `-image` / `-tts` variants,
- * and notably `gemini-3.5-flash` as a bare id, so this list stays explicit rather
- * than pattern-based to avoid false positives.
+ * so this list stays explicit rather than pattern-based to avoid false positives.
  */
 const ANTIGRAVITY_ONLY_BARE_GEMINI_IDS: ReadonlySet<string> = new Set([
   "gemini-3-pro",
@@ -273,7 +271,8 @@ export function isLikelyAntigravityOnlyModel(model: string): boolean {
   const m = model.toLowerCase();
   if (m.startsWith("antigravity-")) return true;
   if (m.includes("claude")) return true;
-  return ANTIGRAVITY_ONLY_BARE_GEMINI_IDS.has(m);
+  const stripped = m.replace(/-(minimal|low|medium|high|max)$/, "");
+  return ANTIGRAVITY_ONLY_BARE_GEMINI_IDS.has(m) || ANTIGRAVITY_ONLY_BARE_GEMINI_IDS.has(stripped);
 }
 
 interface GeminiErrorBody {

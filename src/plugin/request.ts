@@ -61,7 +61,6 @@ import { isGemini3Model, isImageGenerationModel, buildImageGenerationConfig, app
 import {
   resolveModelForHeaderStyle,
   resolveAntigravityGemini31ProBackendModel,
-  resolveAntigravityGemini35FlashBackendModel,
   resolveAntigravityGemini36FlashBackendModel,
   resolveAntigravityGemini37FlashBackendModel,
   resolveAntigravityGemini38FlashBackendModel,
@@ -1092,22 +1091,13 @@ export function prepareAntigravityRequest(
                 effectiveModel = gemini36FlashBackendModel;
                 wrappedBody.model = gemini36FlashBackendModel;
               } else {
-                const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(
                   rawModel,
                   tierThinkingLevel,
                 );
-                if (gemini35FlashBackendModel) {
-                  effectiveModel = gemini35FlashBackendModel;
-                  wrappedBody.model = gemini35FlashBackendModel;
-                } else {
-                  const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(
-                    rawModel,
-                    tierThinkingLevel,
-                  );
-                  if (gemini31ProBackendModel) {
-                    effectiveModel = gemini31ProBackendModel;
-                    wrappedBody.model = gemini31ProBackendModel;
-                  }
+                if (gemini31ProBackendModel) {
+                  effectiveModel = gemini31ProBackendModel;
+                  wrappedBody.model = gemini31ProBackendModel;
                 }
               }
             }
@@ -1222,20 +1212,12 @@ export function prepareAntigravityRequest(
               if (gemini36FlashBackendModel) {
                 effectiveModel = gemini36FlashBackendModel;
               } else {
-                const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(
+                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(
                   rawModel,
                   tierThinkingLevel,
                 );
-                if (gemini35FlashBackendModel) {
-                  effectiveModel = gemini35FlashBackendModel;
-                } else {
-                  const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(
-                    rawModel,
-                    tierThinkingLevel,
-                  );
-                  if (gemini31ProBackendModel) {
-                    effectiveModel = gemini31ProBackendModel;
-                  }
+                if (gemini31ProBackendModel) {
+                  effectiveModel = gemini31ProBackendModel;
                 }
               }
             }

@@ -11,7 +11,7 @@ import { CLAUDE_TOOL_SYSTEM_INSTRUCTION, CLAUDE_DESCRIPTION_PROMPT, ANTIGRAVITY_
 import { analyzeConversationState, closeToolLoopForThinking, needsThinkingRecovery, } from "./thinking-recovery.js";
 import { sanitizeCrossModelPayloadInPlace } from "./transform/cross-model-sanitizer.js";
 import { isGemini3Model, isImageGenerationModel, buildImageGenerationConfig, applyGeminiTransforms } from "./transform/index.js";
-import { resolveModelForHeaderStyle, resolveAntigravityGemini31ProBackendModel, resolveAntigravityGemini35FlashBackendModel, resolveAntigravityGemini36FlashBackendModel, resolveAntigravityGemini37FlashBackendModel, resolveAntigravityGemini38FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
+import { resolveModelForHeaderStyle, resolveAntigravityGemini31ProBackendModel, resolveAntigravityGemini36FlashBackendModel, resolveAntigravityGemini37FlashBackendModel, resolveAntigravityGemini38FlashBackendModel, isClaudeModel, isClaudeThinkingModel, CLAUDE_THINKING_MAX_OUTPUT_TOKENS, } from "./transform/index.js";
 import { detectErrorType } from "./recovery.js";
 import { getSessionFingerprint, buildFingerprintHeaders } from "./fingerprint.js";
 const log = createLogger("request");
@@ -760,17 +760,10 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                                 wrappedBody.model = gemini36FlashBackendModel;
                             }
                             else {
-                                const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
-                                if (gemini35FlashBackendModel) {
-                                    effectiveModel = gemini35FlashBackendModel;
-                                    wrappedBody.model = gemini35FlashBackendModel;
-                                }
-                                else {
-                                    const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
-                                    if (gemini31ProBackendModel) {
-                                        effectiveModel = gemini31ProBackendModel;
-                                        wrappedBody.model = gemini31ProBackendModel;
-                                    }
+                                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
+                                if (gemini31ProBackendModel) {
+                                    effectiveModel = gemini31ProBackendModel;
+                                    wrappedBody.model = gemini31ProBackendModel;
                                 }
                             }
                         }
@@ -860,15 +853,9 @@ export function prepareAntigravityRequest(input, init, accessToken, projectId, e
                                 effectiveModel = gemini36FlashBackendModel;
                             }
                             else {
-                                const gemini35FlashBackendModel = resolveAntigravityGemini35FlashBackendModel(rawModel, tierThinkingLevel);
-                                if (gemini35FlashBackendModel) {
-                                    effectiveModel = gemini35FlashBackendModel;
-                                }
-                                else {
-                                    const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
-                                    if (gemini31ProBackendModel) {
-                                        effectiveModel = gemini31ProBackendModel;
-                                    }
+                                const gemini31ProBackendModel = resolveAntigravityGemini31ProBackendModel(rawModel, tierThinkingLevel);
+                                if (gemini31ProBackendModel) {
+                                    effectiveModel = gemini31ProBackendModel;
                                 }
                             }
                         }

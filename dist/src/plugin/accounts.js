@@ -565,7 +565,7 @@ export class AccountManager {
     getAvailableHeaderStyle(account, family, model) {
         clearExpiredRateLimits(account);
         if (family === "claude") {
-            return isRateLimitedForHeaderStyle(account, family, "antigravity") ? null : "antigravity";
+            return isRateLimitedForHeaderStyle(account, family, "antigravity", model) ? null : "antigravity";
         }
         if (!isRateLimitedForHeaderStyle(account, family, "antigravity", model)) {
             return "antigravity";

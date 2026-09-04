@@ -444,6 +444,25 @@ describe("AccountManager", () => {
       expect(manager.getAvailableHeaderStyle(account!, "claude")).toBeNull();
     });
 
+    it("getAvailableHeaderStyle returns gemini-cli when antigravity is rate-limited for gemini-3.8-flash", () => {
+      const stored: AccountStorageV4 = {
+        version: 4,
+        accounts: [
+          { refreshToken: "r1", projectId: "p1", addedAt: 1, lastUsed: 0 },
+        ],
+        activeIndex: 0,
+      };
+
+      const manager = new AccountManager(undefined, stored);
+      const account = manager.getCurrentOrNextForFamily("gemini", "gemini-3.8-flash");
+
+      expect(manager.getAvailableHeaderStyle(account!, "gemini", "gemini-3.8-flash")).toBe("antigravity");
+
+      manager.markRateLimited(account!, 60000, "gemini", "antigravity", "gemini-3.8-flash");
+
+      expect(manager.getAvailableHeaderStyle(account!, "gemini", "gemini-3.8-flash")).toBe("gemini-cli");
+    });
+
     it("Gemini rate limits expire independently per header style", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(0));

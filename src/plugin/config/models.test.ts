@@ -23,7 +23,6 @@ describe("OPENCODE_MODEL_DEFINITIONS", () => {
       "antigravity-claude-sonnet-4-6",
       "antigravity-gemini-3-flash",
       "antigravity-gemini-3.1-pro",
-      "antigravity-gemini-3.5-flash",
       "antigravity-gemini-3.6-flash",
       "antigravity-gemini-3.7-flash",
       "antigravity-gemini-3.8-flash",
@@ -38,13 +37,6 @@ describe("OPENCODE_MODEL_DEFINITIONS", () => {
     });
 
     expect(getModel("antigravity-gemini-3-flash").variants).toEqual({
-      minimal: { thinkingLevel: "minimal" },
-      low: { thinkingLevel: "low" },
-      medium: { thinkingLevel: "medium" },
-      high: { thinkingLevel: "high" },
-    });
-
-    expect(getModel("antigravity-gemini-3.5-flash").variants).toEqual({
       minimal: { thinkingLevel: "minimal" },
       low: { thinkingLevel: "low" },
       medium: { thinkingLevel: "medium" },

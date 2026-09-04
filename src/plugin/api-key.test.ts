@@ -110,9 +110,31 @@ describe("api-key agy sdk support", () => {
     });
   });
 
+  it("rewrites antigravity-gemini-3.8-flash to bare gemini-3.8-flash for agy-sdk fallback", async () => {
+    const prepared = await prepareAgySdkGeminiRequest(
+      "https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.8-flash:streamGenerateContent?alt=sse",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer oauth",
+        },
+        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "hello" }] }] }),
+      },
+      { label: "backup", apiKey: "test-key" },
+    );
+
+    expect(String(prepared.request)).toBe(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse",
+    );
+    expect(prepared.model).toBe("gemini-3.8-flash");
+    const headers = new Headers(prepared.init.headers);
+    expect(headers.get("x-goog-api-key")).toBe("test-key");
+    expect(headers.get("Authorization")).toBeNull();
+  });
+
   it("preserves Request input method, headers, and body when routing through API-key auth", async () => {
     const original = new Request(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent?key=old-url-key",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?key=old-url-key",
       {
         method: "POST",
         headers: {
@@ -147,7 +169,7 @@ describe("api-key agy sdk support", () => {
 
   it("adds default Gemini 3 thinking config without dropping extra body options", async () => {
     const prepared = await prepareAgySdkGeminiRequest(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
       {
         method: "POST",
         body: JSON.stringify({
@@ -223,7 +245,6 @@ describe("api-key agy sdk support", () => {
   it("accepts translatable Antigravity-only Gemini ids, rejects Claude and rate-limited keys", () => {
     // Public-API Gemini ids route to the API-key path directly.
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent")).toBe(true);
-    expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent")).toBe(true);
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent")).toBe(true);
 
     // Antigravity-only bare Gemini ids and antigravity-prefixed variants are
@@ -235,10 +256,10 @@ describe("api-key agy sdk support", () => {
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent")).toBe(true);
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.1-pro:generateContent")).toBe(true);
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3-pro-high:generateContent")).toBe(true);
-    // antigravity-gemini-3.5-flash strips to the bare public-API native gemini-3.5-flash.
-    expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.5-flash:generateContent")).toBe(true);
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.7-flash:generateContent")).toBe(true);
+    // Gemini 3.8 Flash is routable via API key token credits fallback
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.8-flash:generateContent")).toBe(true);
+    expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent")).toBe(true);
 
     // Claude (and unmapped antigravity- prefixed ids) have no public-API equivalent.
     expect(isAgySdkSupportedRequest("https://generativelanguage.googleapis.com/v1beta/models/claude-opus-4-6-thinking:generateContent")).toBe(false);
@@ -269,16 +290,13 @@ describe("api-key agy sdk support", () => {
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro:streamGenerateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.1-pro:generateContent")).toBe(false);
-    // antigravity-gemini-3.5-flash falls through (strips to public-API native gemini-3.5-flash).
-    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.5-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.7-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/antigravity-gemini-3.8-flash:generateContent")).toBe(false);
+    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent")).toBe(false);
 
     // Public-API Gemini ids → false (they CAN be served by the public API natively).
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent")).toBe(false);
-    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent")).toBe(false);
-    expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent")).toBe(false);
     expect(isAntigravityOnlyGenerativeLanguageRequest("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent")).toBe(false);
 
     // Wrong host or malformed → false
@@ -389,12 +407,13 @@ describe("isLikelyAntigravityOnlyModel", () => {
     expect(isLikelyAntigravityOnlyModel("claude-opus-4-6-thinking")).toBe(true);
   });
 
-  it("does NOT flag public-API Gemini 3 ids (preview / lite / 3.5-flash)", () => {
+  it("does NOT flag public-API Gemini 3 ids (preview / lite / 3.8)", () => {
     expect(isLikelyAntigravityOnlyModel("gemini-3.1-pro-preview")).toBe(false);
     expect(isLikelyAntigravityOnlyModel("gemini-3-pro-preview")).toBe(false);
+    expect(isLikelyAntigravityOnlyModel("gemini-3.1-flash-lite-preview")).toBe(false);
     expect(isLikelyAntigravityOnlyModel("gemini-3.1-flash-lite")).toBe(false);
     expect(isLikelyAntigravityOnlyModel("gemini-3-flash-preview")).toBe(false);
-    expect(isLikelyAntigravityOnlyModel("gemini-3.5-flash")).toBe(false);
+    expect(isLikelyAntigravityOnlyModel("gemini-3.8-flash")).toBe(false);
   });
 
   it("does NOT flag Gemini 2.x ids", () => {

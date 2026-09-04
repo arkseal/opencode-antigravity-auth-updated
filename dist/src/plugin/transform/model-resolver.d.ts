@@ -50,19 +50,15 @@ export declare const GEMINI_3_THINKING_LEVELS: readonly ["minimal", "low", "medi
  * - Claude non-thinking: claude-{model} (no -thinking suffix)
  */
 export declare const MODEL_ALIASES: Record<string, string>;
+export declare const GEMINI_38_FLASH_REGEX: RegExp;
 /**
  * Resolves antigravity-gemini-3.1-pro to Cloud Code backend model ids.
  * Maps low/default tier to gemini-3.1-pro-low and high tier to gemini-pro-agent.
  */
 export declare function resolveAntigravityGemini31ProBackendModel(model: string, thinkingLevel?: string): string | undefined;
 /**
- * Cloud Code does not expose a bare `gemini-3.5-flash` backend id.
- * Antigravity/agy resolves the UI model to these advertised ids instead.
- */
-export declare function resolveAntigravityGemini35FlashBackendModel(model: string, thinkingLevel?: string): string | undefined;
-/**
  * Resolves antigravity-gemini-3.6-flash to Cloud Code backend model ids.
- * Mirrors 3.5 flash mapping: non-high -> gemini-3.5-flash-low, high -> gemini-3-flash-agent.
+ * Maps low -> gemini-3.6-flash-low, medium -> gemini-3.6-flash-medium, high -> gemini-3.6-flash-high.
  */
 export declare function resolveAntigravityGemini36FlashBackendModel(model: string, thinkingLevel?: string): string | undefined;
 /**

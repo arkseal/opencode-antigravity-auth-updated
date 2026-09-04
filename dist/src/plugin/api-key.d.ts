@@ -37,7 +37,7 @@ export declare function isAgySdkSupportedRequest(urlString: string): boolean;
  *
  * Translatable Antigravity-only Gemini ids (e.g. `antigravity-gemini-3.1-pro`,
  * bare `gemini-3.1-pro`) and Antigravity-prefixed public-API natives (e.g.
- * `antigravity-gemini-3.5-flash` → `gemini-3.5-flash`) return false here —
+ * `antigravity-gemini-3.8-flash` → `gemini-3.8-flash`) return false here —
  * `prepareAgySdkGeminiRequest` rewrites them to the public-API equivalent.
  *
  * Use this in API-key-only auth paths to short-circuit with a helpful synthetic

@@ -32,7 +32,7 @@ import { initLogger, createLogger } from "./plugin/logger.js";
 import { initHealthTracker, getHealthTracker, initTokenTracker, getTokenTracker } from "./plugin/rotation.js";
 import { initAntigravityVersion } from "./plugin/version.js";
 import { executeSearch } from "./plugin/search.js";
-import { createAntigravityOnlyModelErrorResponse, extractRequestedGeminiModel, fetchWithAgySdkCredential, fetchGeminiApiModels, getAgySdkCredentials, isAgySdkSupportedRequest, isAntigravityOnlyGenerativeLanguageRequest, isApiKeyAuth, selectAgySdkCredential, } from "./plugin/api-key.js";
+import { createAntigravityOnlyModelErrorResponse, extractRequestedGeminiModel, fetchWithAgySdkCredential, fetchGeminiApiModels, getAgySdkCredentials, isAgySdkSupportedRequest, isAntigravityOnlyGenerativeLanguageRequest, isApiKeyAuth, isLikelyAntigravityOnlyModel, selectAgySdkCredential, } from "./plugin/api-key.js";
 import { OPENCODE_MODEL_DEFINITIONS, mergeModelDefinitions, modelsFromAntigravityAvailableModels, modelsFromGeminiApi, } from "./plugin/config/models.js";
 const MAX_OAUTH_ACCOUNTS = 10;
 const MAX_WARMUP_SESSIONS = 1000;

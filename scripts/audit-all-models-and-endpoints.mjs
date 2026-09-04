@@ -96,7 +96,6 @@ const modelsToTest = [
   // Antigravity models (using Antigravity headers)
   { id: "antigravity-gemini-3.1-pro", style: "antigravity", variants: ["low", "high"] },
   { id: "antigravity-gemini-3-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
-  { id: "antigravity-gemini-3.5-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-gemini-3.6-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-gemini-3.7-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },
   { id: "antigravity-gemini-3.8-flash", style: "antigravity", variants: ["minimal", "low", "medium", "high"] },

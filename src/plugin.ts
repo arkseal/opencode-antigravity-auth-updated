@@ -71,6 +71,7 @@ import {
   isAgySdkSupportedRequest,
   isAntigravityOnlyGenerativeLanguageRequest,
   isApiKeyAuth,
+  isLikelyAntigravityOnlyModel,
   selectAgySdkCredential,
 } from "./plugin/api-key";
 import {

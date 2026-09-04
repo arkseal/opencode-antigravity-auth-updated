@@ -45,7 +45,7 @@ Settings that affect how the model thinks and responds.
 
 ## Antigravity SDK And Model Discovery
 
-PR #576 added the Antigravity SDK / Gemini API-key path and runtime model discovery. Most users can keep the defaults: OAuth accounts still route Antigravity and Claude models, while configured API keys can serve Gemini models such as `gemini-3.5-flash` or act as fallback capacity when OAuth quotas are exhausted.
+PR #576 added the Antigravity SDK / Gemini API-key path and runtime model discovery. Most users can keep the defaults: OAuth accounts still route Antigravity and Claude models, while configured API keys can serve Gemini models such as `gemini-2.5-flash` or act as fallback capacity when OAuth quotas are exhausted.
 
 | Option | Default | Description |
 |--------|---------|-------------|

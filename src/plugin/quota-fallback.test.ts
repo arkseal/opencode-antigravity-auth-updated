@@ -215,6 +215,23 @@ describe("header routing decision", () => {
       allowQuotaFallback: true,
     });
   });
+
+  it("allows quota fallback for gemini-3.8-flash (no antigravity-only lock)", () => {
+    const decision = resolveHeaderRoutingDecision?.(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent",
+      "gemini",
+      {
+        cli_first: true,
+      },
+    );
+
+    expect(decision).toMatchObject({
+      cliFirst: true,
+      preferredHeaderStyle: "gemini-cli",
+      explicitQuota: false,
+      allowQuotaFallback: true,
+    });
+  });
 });
 
 describe("quota blocked responses", () => {
