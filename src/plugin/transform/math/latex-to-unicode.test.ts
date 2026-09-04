@@ -47,3 +47,35 @@ describe("latexToUnicode - symbols and guards", () => {
     expect(latexToUnicode(codeBlock)).toBe(codeBlock);
   });
 });
+
+describe("latexToUnicode - structural transformations", () => {
+  it("converts powers and superscripts", () => {
+    expect(latexToUnicode("$x^2 + y^2 = z^2$")).toBe("x² + y² = z²");
+    expect(latexToUnicode("$2^{n}$")).toBe("2ⁿ");
+    expect(latexToUnicode("$x^{-1}$")).toBe("x⁻¹");
+    expect(latexToUnicode("$O(n^2)$")).toBe("O(n²)");
+  });
+
+  it("converts subscripts", () => {
+    expect(latexToUnicode("$x_1 + x_2$")).toBe("x₁ + x₂");
+    expect(latexToUnicode("$a_i \\le b_j$")).toBe("aᵢ ≤ bⱼ");
+    expect(latexToUnicode("$a_{n+1}$")).toBe("aₙ₊₁");
+  });
+
+  it("converts fractions", () => {
+    expect(latexToUnicode("$\\frac{1}{2}$")).toBe("1/2");
+    expect(latexToUnicode("$\\frac{a+b}{c}$")).toBe("(a+b)/c");
+    expect(latexToUnicode("$\\frac{x}{y}$")).toBe("x/y");
+  });
+
+  it("converts square roots and nth roots", () => {
+    expect(latexToUnicode("$\\sqrt{x}$")).toBe("√(x)");
+    expect(latexToUnicode("$\\sqrt{a^2 + b^2}$")).toBe("√(a² + b²)");
+    expect(latexToUnicode("$\\sqrt[3]{8}$")).toBe("∛(8)");
+  });
+
+  it("formats display block equations", () => {
+    const input = "$$E = mc^2$$";
+    expect(latexToUnicode(input)).toBe("\nE = mc²\n");
+  });
+});

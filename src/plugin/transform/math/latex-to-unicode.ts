@@ -105,6 +105,31 @@ const SYMBOL_MAP: Record<string, string> = {
   "\\Omega": "Ω",
 };
 
+const SUPERSCRIPT_MAP: Record<string, string> = {
+  "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+  "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹",
+  "+": "⁺", "-": "⁻", "=": "⁼", "(": "⁽", ")": "⁾",
+  "n": "ⁿ", "i": "ⁱ", "x": "ˣ",
+};
+
+const SUBSCRIPT_MAP: Record<string, string> = {
+  "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
+  "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
+  "+": "₊", "-": "₋", "=": "₌", "(": "₍", ")": "₎",
+  "a": "ₐ", "e": "ₑ", "h": "ₕ", "i": "ᵢ", "j": "ⱼ",
+  "k": "ₖ", "l": "ₗ", "m": "ₘ", "n": "ₙ", "o": "ₒ",
+  "p": "ₚ", "r": "ᵣ", "s": "ₛ", "t": "ₜ", "u": "ᵤ",
+  "v": "ᵥ", "x": "ₓ",
+};
+
+function toSuperscript(str: string): string {
+  return str.split("").map((c) => SUPERSCRIPT_MAP[c] ?? c).join("");
+}
+
+function toSubscript(str: string): string {
+  return str.split("").map((c) => SUBSCRIPT_MAP[c] ?? c).join("");
+}
+
 /**
  * Transforms an inner LaTeX expression (content inside $...$ or $$...$$) to Unicode.
  */
@@ -116,6 +141,25 @@ export function transformMathExpression(expr: string): string {
 
   // Replace complexity \mathcal{O} or \mathcal{o}
   res = res.replace(/\\mathcal\{([A-Za-z])\}/g, "$1");
+
+  // Roots: \sqrt[3]{...} -> ∛(...) and \sqrt{...} -> √(...)
+  res = res.replace(/\\sqrt\[3\]\{([^}]+)\}/g, "∛($1)");
+  res = res.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
+
+  // Fractions: \frac{num}{den}
+  res = res.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_match, num: string, den: string) => {
+    const cleanNum = (num.length > 1 && /[+\-*\/]/.test(num)) ? `(${num.trim()})` : num.trim();
+    const cleanDen = (den.length > 1 && /[+\-*\/]/.test(den)) ? `(${den.trim()})` : den.trim();
+    return `${cleanNum}/${cleanDen}`;
+  });
+
+  // Superscripts: ^{...} or ^c
+  res = res.replace(/\^{([^}]+)\}/g, (_match, inner) => toSuperscript(inner));
+  res = res.replace(/\^([0-9+\-()nix])/g, (_match, c) => toSuperscript(c));
+
+  // Subscripts: _{...} or _c
+  res = res.replace(/_{([^}]+)\}/g, (_match, inner) => toSubscript(inner));
+  res = res.replace(/_([0-9+\-()aehijklmnoprstuvx])/g, (_match, c) => toSubscript(c));
 
   // Replace mapped symbols with word boundary / delimiter awareness
   for (const [cmd, symbol] of Object.entries(SYMBOL_MAP)) {
