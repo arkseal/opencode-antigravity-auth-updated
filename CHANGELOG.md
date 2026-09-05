@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0] - 2026-09-04
+
+### Added
+
+- **Gemini Mathematical & Symbol Formatting** - Formats mathematical equations, arrows, relations, Greek letters, powers, subscripts, fractions, and complexity notations into clean Unicode/ASCII in OpenCode terminal output.
+- **Cross-Chunk SSE Stream Buffering** - Added `MathStreamBuffer` to stream responses in real-time while buffering incomplete `$ ... $` delimiters across streaming chunks to prevent malformed transformations.
+- **Config Option `format_math`** - Added `format_math` boolean toggle (default `true`) allowing users to enable/disable LaTeX math formatting.
+
+### Fixed
+
+- **Test Suite Stderr Warnings** - Suppressed stderr warning leak in `src/plugin/transform/gemini.test.ts` by mocking and asserting on `console.warn` in `buildImageGenerationConfig` aspect ratio tests.
+
 ## [1.8.0] - 2026-09-02
 
 ### Added
