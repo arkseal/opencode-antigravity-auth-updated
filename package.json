@@ -55,27 +55,27 @@
         "test:e2e:regression": "npx tsx script/test-regression.ts"
     },
     "peerDependencies": {
-        "typescript": "^5"
+        "typescript": ">=5.0.0"
     },
     "devDependencies": {
-        "@opentui/core": "0.4.5",
-        "@opentui/solid": "0.4.5",
-        "@types/node": "^24.10.1",
+        "@opentui/core": "0.5.10",
+        "@opentui/solid": "0.5.10",
+        "@types/node": "^26.4.1",
         "@types/proper-lockfile": "^4.1.4",
-        "@vitest/coverage-v8": "^3.0.0",
-        "@vitest/ui": "^3.0.0",
+        "@vitest/coverage-v8": "^5.0.0",
+        "@vitest/ui": "^5.0.0",
         "esbuild-plugin-solid": "^0.6.0",
-        "solid-js": "^1.9.10",
+        "solid-js": "1.9.12",
         "tsup": "^8.5.1",
-        "typescript": "^5.0.0",
-        "vitest": "^3.0.0",
-        "zod-to-json-schema": "^3.25.1"
+        "typescript": "^7.0.2",
+        "vitest": "^5.0.0",
+        "zod-to-json-schema": "^3.25.2"
     },
     "dependencies": {
         "@openauthjs/openauth": "^0.4.3",
-        "@opencode-ai/plugin": "^1.2.10",
+        "@opencode-ai/plugin": "^1.18.29",
         "proper-lockfile": "^4.1.2",
         "xdg-basedir": "^5.1.0",
-        "zod": "^4.0.0"
+        "zod": "^4.5.4"
     }
 }

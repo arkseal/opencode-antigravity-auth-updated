@@ -60,7 +60,7 @@ export declare function getAntigravityHeaders(): HeaderSet & {
 export declare const ANTIGRAVITY_HEADERS: {
     readonly "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Antigravity/1.19.4 Chrome/138.0.7204.235 Electron/37.3.1 Safari/537.36";
     readonly "X-Goog-Api-Client": "google-cloud-sdk vscode_cloudshelleditor/0.1";
-    readonly "Client-Metadata": "{\"ideType\":\"ANTIGRAVITY\",\"platform\":\"WINDOWS\",\"pluginType\":\"GEMINI\"}" | "{\"ideType\":\"ANTIGRAVITY\",\"platform\":\"MACOS\",\"pluginType\":\"GEMINI\"}";
+    readonly "Client-Metadata": "{\"ideType\":\"ANTIGRAVITY\",\"platform\":\"MACOS\",\"pluginType\":\"GEMINI\"}" | "{\"ideType\":\"ANTIGRAVITY\",\"platform\":\"WINDOWS\",\"pluginType\":\"GEMINI\"}";
 };
 export declare const GEMINI_CLI_HEADERS: {
     readonly "User-Agent": "google-api-nodejs-client/9.15.1";

@@ -17,9 +17,9 @@ import { z } from "zod";
  * - `hybrid` (default): Deterministic selection based on health score + token bucket + LRU freshness.
  */
 export declare const AccountSelectionStrategySchema: z.ZodEnum<{
-    sticky: "sticky";
-    "round-robin": "round-robin";
     hybrid: "hybrid";
+    "round-robin": "round-robin";
+    sticky: "sticky";
 }>;
 export type AccountSelectionStrategy = z.infer<typeof AccountSelectionStrategySchema>;
 /**
@@ -30,8 +30,8 @@ export type AccountSelectionStrategy = z.infer<typeof AccountSelectionStrategySc
  * - `all`: Show toasts for all sessions including subagents and background tasks.
  */
 export declare const ToastScopeSchema: z.ZodEnum<{
-    root_only: "root_only";
     all: "all";
+    root_only: "root_only";
 }>;
 export type ToastScope = z.infer<typeof ToastScopeSchema>;
 /**
@@ -42,8 +42,8 @@ export type ToastScope = z.infer<typeof ToastScopeSchema>;
  * - `performance_first`: Round-robin distribution for maximum throughput.
  */
 export declare const SchedulingModeSchema: z.ZodEnum<{
-    cache_first: "cache_first";
     balance: "balance";
+    cache_first: "cache_first";
     performance_first: "performance_first";
 }>;
 export type SchedulingMode = z.infer<typeof SchedulingModeSchema>;
@@ -88,8 +88,8 @@ export declare const AntigravityConfigSchema: z.ZodObject<{
     $schema: z.ZodOptional<z.ZodString>;
     quiet_mode: z.ZodDefault<z.ZodBoolean>;
     toast_scope: z.ZodDefault<z.ZodEnum<{
-        root_only: "root_only";
         all: "all";
+        root_only: "root_only";
     }>>;
     debug: z.ZodDefault<z.ZodBoolean>;
     debug_tui: z.ZodDefault<z.ZodBoolean>;
@@ -133,15 +133,15 @@ export declare const AntigravityConfigSchema: z.ZodObject<{
         antigravity: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>>;
     account_selection_strategy: z.ZodDefault<z.ZodEnum<{
-        sticky: "sticky";
-        "round-robin": "round-robin";
         hybrid: "hybrid";
+        "round-robin": "round-robin";
+        sticky: "sticky";
     }>>;
     pid_offset_enabled: z.ZodDefault<z.ZodBoolean>;
     switch_on_first_rate_limit: z.ZodDefault<z.ZodBoolean>;
     scheduling_mode: z.ZodDefault<z.ZodEnum<{
-        cache_first: "cache_first";
         balance: "balance";
+        cache_first: "cache_first";
         performance_first: "performance_first";
     }>>;
     max_cache_first_wait_seconds: z.ZodDefault<z.ZodNumber>;

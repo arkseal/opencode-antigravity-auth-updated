@@ -43,6 +43,10 @@ type VerifyAccountAccess = (
   providerId: string,
 ) => Promise<{ status: string; message: string; verifyUrl?: string }>;
 
+vi.mock("@opencode-ai/plugin", () => ({
+  tool: vi.fn(),
+}));
+
 let resolveQuotaFallbackHeaderStyle: ResolveQuotaFallbackHeaderStyle | undefined;
 let getHeaderStyleFromUrl: GetHeaderStyleFromUrl | undefined;
 let resolveHeaderRoutingDecision: ResolveHeaderRoutingDecision | undefined;
@@ -50,10 +54,6 @@ let createSoftQuotaBlockedResponse: CreateSoftQuotaBlockedResponse | undefined;
 let verifyAccountAccess: VerifyAccountAccess | undefined;
 
 beforeAll(async () => {
-  vi.mock("@opencode-ai/plugin", () => ({
-    tool: vi.fn(),
-  }));
-
   const { __testExports } = await import("../plugin");
   resolveQuotaFallbackHeaderStyle = (__testExports as {
     resolveQuotaFallbackHeaderStyle?: ResolveQuotaFallbackHeaderStyle;
